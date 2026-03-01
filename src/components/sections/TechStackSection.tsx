@@ -1,94 +1,78 @@
 import { motion } from "framer-motion";
-import { BarChart3, Settings, Bot, Cpu, Code2, Layers } from "lucide-react";
 import type { TechCategory } from "@/types/site";
 
-const iconMap: Record<string, React.ReactNode> = {
-  BarChart3: <BarChart3 size={20} />,
-  Settings: <Settings size={20} />,
-  Bot: <Bot size={20} />,
-  Cpu: <Cpu size={20} />,
-  Code2: <Code2 size={20} />,
-  Layers: <Layers size={20} />,
-};
+const CAT_COLORS = [
+  { text: "hsl(var(--lime))", bg: "hsl(var(--lime) / 0.08)", border: "hsl(var(--lime) / 0.2)", bar: "linear-gradient(90deg, hsl(var(--lime)), hsl(125 70% 60%))" },
+  { text: "hsl(var(--violet))", bg: "hsl(var(--violet) / 0.08)", border: "hsl(var(--violet) / 0.2)", bar: "linear-gradient(90deg, hsl(var(--violet)), hsl(200 85% 62%))" },
+  { text: "hsl(var(--coral))", bg: "hsl(var(--coral) / 0.08)", border: "hsl(var(--coral) / 0.2)", bar: "linear-gradient(90deg, hsl(var(--coral)), hsl(38 95% 62%))" },
+];
 
-const colorMap: Record<string, string> = {
-  cyan: "hsl(var(--cyan))",
-  purple: "hsl(var(--purple))",
-  green: "hsl(var(--green))",
-  orange: "hsl(var(--orange))",
-};
+interface Props { techStack: TechCategory[]; extraTechs: string[]; }
 
-const barClassMap: Record<string, string> = {
-  cyan: "progress-bar-cyan",
-  purple: "progress-bar-purple",
-  green: "progress-bar-green",
-};
-
-interface TechStackSectionProps {
-  techStack: TechCategory[];
-  extraTechs: string[];
-}
-
-export function TechStackSection({ techStack, extraTechs }: TechStackSectionProps) {
+export function TechStackSection({ techStack, extraTechs }: Props) {
   return (
-    <section id="stack" className="py-24 bg-muted/30">
-      <div className="container max-w-6xl px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-14"
-        >
-          <p className="section-label mb-3">// COMPETÊNCIAS TÉCNICAS</p>
-          <h2 className="text-4xl font-bold text-foreground mb-3">Stack Tecnológica</h2>
-          <p className="text-muted-foreground">
-            Ferramentas e tecnologias que compõem meu arsenal analítico.
+    <section id="stack" style={{ padding: "120px 0", background: "hsl(var(--muted))" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px" }}>
+
+        {/* Header */}
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} style={{ marginBottom: 64, display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 24 }}>
+          <div>
+            <span className="eyebrow" style={{ display: "block", marginBottom: 12 }}>Arsenal técnico</span>
+            <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(32px, 4vw, 48px)", letterSpacing: "-0.03em", color: "hsl(var(--foreground))" }}>
+              Stack <span className="text-gradient">Tecnológica</span>
+            </h2>
+          </div>
+          <p style={{ fontSize: 14, color: "hsl(var(--muted-foreground))", maxWidth: 320, lineHeight: 1.65 }}>
+            Ferramentas e tecnologias que compõem meu ecossistema analítico.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-10">
+        {/* Category cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20, marginBottom: 40 }}>
           {techStack.map((cat, ci) => {
-            const color = colorMap[cat.color] || colorMap.cyan;
-            const barClass = barClassMap[cat.color] || "progress-bar-cyan";
-            const icon = iconMap[cat.icon] || <BarChart3 size={20} />;
+            const colors = CAT_COLORS[ci % CAT_COLORS.length];
             return (
               <motion.div
                 key={cat.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: ci * 0.1 }}
-                className="card-glass rounded-xl p-6"
+                initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: ci * 0.1 }}
+                className="card-hover"
+                style={{
+                  background: "hsl(var(--card))", border: "1px solid hsl(var(--border))",
+                  borderRadius: 16, padding: "28px 24px",
+                }}
               >
-                <div className="flex items-center gap-3 mb-1">
-                  <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center"
-                    style={{ background: `${color}22`, color }}
-                  >
-                    {icon}
+                {/* Category header */}
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
+                  <span style={{
+                    width: 36, height: 36, borderRadius: 8, fontSize: 18,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    background: colors.bg, border: `1px solid ${colors.border}`,
+                  }}>
+                    {cat.icon}
+                  </span>
+                  <div>
+                    <h3 style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 16, color: "hsl(var(--foreground))", marginBottom: 2 }}>{cat.title}</h3>
+                    <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, color: colors.text, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                      {cat.techs.length} tecnologias
+                    </span>
                   </div>
-                  <h3 className="font-bold text-foreground">{cat.title}</h3>
                 </div>
-                <div
-                  className="h-0.5 mb-5 w-full"
-                  style={{ background: `linear-gradient(90deg, ${color}, transparent)` }}
-                />
-                <div className="space-y-4">
-                  {cat.techs.map((tech) => (
+
+                {/* Skills */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  {cat.techs.map((tech, ti) => (
                     <div key={tech.name}>
-                      <div className="flex justify-between mb-1 text-sm">
-                        <span className="text-foreground/80">{tech.name}</span>
-                        <span style={{ color }} className="font-mono font-semibold">
-                          {tech.level}%
-                        </span>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                        <span style={{ fontSize: 13, fontWeight: 500, color: "hsl(var(--foreground) / 0.85)" }}>{tech.name}</span>
+                        <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 12, color: colors.text, fontWeight: 600 }}>{tech.level}%</span>
                       </div>
-                      <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                      <div style={{ height: 3, background: "hsl(var(--border))", borderRadius: 3, overflow: "hidden" }}>
                         <motion.div
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${tech.level}%` }}
+                          initial={{ width: 0 }} whileInView={{ width: `${tech.level}%` }}
                           viewport={{ once: true }}
-                          transition={{ duration: 0.8, delay: 0.2 }}
-                          className={`h-full rounded-full ${barClass}`}
+                          transition={{ duration: 1, delay: ci * 0.1 + ti * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                          style={{ height: "100%", borderRadius: 3, background: colors.bar }}
                         />
                       </div>
                     </div>
@@ -101,22 +85,23 @@ export function TechStackSection({ techStack, extraTechs }: TechStackSectionProp
 
         {/* Extra techs */}
         {extraTechs.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center"
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+            style={{ padding: "24px 28px", background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 16 }}
           >
-            <p className="font-mono text-xs text-muted-foreground mb-4 uppercase tracking-widest">
-              TAMBÉM UTILIZO →
+            <p style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 11, color: "hsl(var(--muted-foreground))", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 16 }}>
+              também utilizo
             </p>
-            <div className="flex flex-wrap justify-center gap-2">
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {extraTechs.map((tech) => (
-                <span
-                  key={tech}
-                  className="px-3 py-1 rounded-full border border-border text-sm text-muted-foreground"
+                <span key={tech} style={{
+                  padding: "5px 12px", borderRadius: 6,
+                  background: "hsl(var(--muted))", border: "1px solid hsl(var(--border))",
+                  fontSize: 13, color: "hsl(var(--foreground) / 0.7)", fontWeight: 500,
+                  transition: "all 0.2s", cursor: "default",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "hsl(var(--lime) / 0.4)"; e.currentTarget.style.color = "hsl(var(--foreground))"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "hsl(var(--border))"; e.currentTarget.style.color = "hsl(var(--foreground) / 0.7)"; }}
                 >
-                  <span className="mr-1.5 text-muted-foreground/50">•</span>
                   {tech}
                 </span>
               ))}

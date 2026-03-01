@@ -1,81 +1,115 @@
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { BarChart3, Clock, Zap, Database, TrendingUp, Star, Activity } from "lucide-react";
 import type { MetricItem } from "@/types/site";
 
-const iconMap: Record<string, React.ReactNode> = {
-  BarChart3: <BarChart3 size={22} />,
-  Clock: <Clock size={22} />,
-  Zap: <Zap size={22} />,
-  Database: <Database size={22} />,
-  TrendingUp: <TrendingUp size={22} />,
-  Star: <Star size={22} />,
-  Activity: <Activity size={22} />,
+const ICONS: Record<string, React.ReactNode> = {
+  BarChart3: <BarChart3 size={18} />,
+  Clock: <Clock size={18} />,
+  Zap: <Zap size={18} />,
+  Database: <Database size={18} />,
+  TrendingUp: <TrendingUp size={18} />,
+  Star: <Star size={18} />,
+  Activity: <Activity size={18} />,
 };
 
-const colorMap: Record<string, string> = {
-  cyan: "hsl(var(--cyan))",
-  purple: "hsl(var(--purple))",
-  green: "hsl(var(--green))",
-  orange: "hsl(var(--orange))",
-};
+const ACCENT = ["hsl(var(--lime))", "hsl(var(--coral))", "hsl(var(--sky))", "hsl(var(--violet))"];
 
-interface MetricsSectionProps {
-  metrics: MetricItem[];
+function CountUp({ target, started }: { target: number; started: boolean }) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!started) return;
+    let t0: number | null = null;
+    const dur = 1400;
+    const step = (ts: number) => {
+      if (!t0) t0 = ts;
+      const p = Math.min((ts - t0) / dur, 1);
+      const e = 1 - Math.pow(1 - p, 3);
+      setN(Math.round(e * target));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [started, target]);
+  return <>{n}</>;
 }
 
-export function MetricsSection({ metrics }: MetricsSectionProps) {
+interface Props { metrics: MetricItem[]; }
+
+export function MetricsSection({ metrics }: Props) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [started, setStarted] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setStarted(true); }, { threshold: 0.3 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
   return (
-    <section id="sobre" className="py-24 bg-background">
-      <div className="container max-w-6xl px-8">
+    <section ref={ref} style={{ padding: "100px 0", background: "hsl(var(--muted))" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px" }}>
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-14"
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} style={{ marginBottom: 56 }}
         >
-          <p className="section-label mb-3">// IMPACTO MENSURÁVEL</p>
-          <h2 className="text-4xl font-bold text-foreground">Impacto em Números</h2>
+          <span className="eyebrow" style={{ marginBottom: 12, display: "block" }}>Impacto Mensurável</span>
+          <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 800, color: "hsl(var(--foreground))", letterSpacing: "-0.03em" }}>
+            Resultados em números
+          </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {metrics.map((metric, i) => {
-            const color = colorMap[metric.color] || colorMap.cyan;
-            const icon = iconMap[metric.icon] || <BarChart3 size={22} />;
+        {/* Cards grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+          {metrics.map((m, i) => {
+            const accent = ACCENT[i % ACCENT.length];
+            const icon = ICONS[m.icon] || <BarChart3 size={18} />;
+            const num = parseInt(m.value) || 0;
+            const isYear = m.value.length === 4 && !isNaN(Number(m.value));
 
             return (
               <motion.div
-                key={metric.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="card-glass rounded-xl p-6 relative overflow-hidden group"
+                key={m.id}
+                initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                className="card-hover"
+                style={{
+                  background: "hsl(var(--card))", border: "1px solid hsl(var(--border))",
+                  borderRadius: 16, padding: "32px 28px", position: "relative", overflow: "hidden",
+                }}
               >
-                {/* Top accent line */}
-                <div
-                  className="absolute top-0 left-0 right-0 h-px"
-                  style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
-                />
+                {/* Corner accent */}
+                <div style={{
+                  position: "absolute", top: 0, right: 0,
+                  width: 80, height: 80,
+                  background: `radial-gradient(circle at top right, ${accent.replace(")", " / 0.12)")}, transparent 70%)`,
+                  pointerEvents: "none",
+                }} />
 
                 {/* Icon */}
-                <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
-                  style={{ background: `${color}22`, color }}
-                >
+                <div style={{
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  width: 36, height: 36, borderRadius: 8, marginBottom: 20,
+                  background: `${accent.replace(")", " / 0.1)")}`,
+                  color: accent, border: `1px solid ${accent.replace(")", " / 0.2)")}`,
+                }}>
                   {icon}
                 </div>
 
                 {/* Value */}
-                <div
-                  className="text-5xl font-bold mb-2 font-mono"
-                  style={{ color }}
-                >
-                  {metric.prefix}{metric.value}{metric.suffix}
+                <div style={{ display: "flex", alignItems: "baseline", gap: 2, marginBottom: 4 }}>
+                  {m.prefix && <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 28, color: accent }}>{m.prefix}</span>}
+                  <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 52, lineHeight: 1, color: "hsl(var(--foreground))", letterSpacing: "-0.03em" }}>
+                    {isYear ? m.value : <CountUp target={num} started={started} />}
+                  </span>
+                  {m.suffix && <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 24, color: accent }}>{m.suffix}</span>}
                 </div>
 
                 {/* Label */}
-                <div className="font-semibold text-foreground mb-1">{metric.label}</div>
-                <div className="text-sm text-muted-foreground">{metric.sublabel}</div>
+                <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 15, color: "hsl(var(--foreground))", marginBottom: 4 }}>{m.label}</div>
+                <div style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "hsl(var(--muted-foreground))", lineHeight: 1.5 }}>{m.sublabel}</div>
+
+                {/* Bottom accent line */}
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${accent.replace(")", " / 0.6)")}, transparent)` }} />
               </motion.div>
             );
           })}
