@@ -1,0 +1,211 @@
+import type { SiteData } from "@/types/site";
+
+export const defaultSiteData: SiteData = {
+  personal: {
+    firstName: "Vilcimar",
+    lastName: "Rodrigues Pessoa",
+    title: "Business Intelligence Specialist",
+    subtitle: "Transformando dados em decisões estratégicas.",
+    headline:
+      "Especialista em BI, automação de processos e arquitetura analítica orientada a impacto mensurável.",
+    available: true,
+    cvUrl: "#",
+    linkedinUrl: "https://linkedin.com/in/",
+    email: "vilcimar@email.com",
+    location: "Brasil",
+  },
+  metrics: [
+    {
+      id: "m1",
+      prefix: "+",
+      value: "30",
+      suffix: "",
+      label: "Dashboards Estratégicos",
+      sublabel: "Desenvolvidos e entregues em produção",
+      color: "cyan",
+      icon: "BarChart3",
+    },
+    {
+      id: "m2",
+      prefix: "+",
+      value: "6",
+      suffix: "",
+      label: "Anos com Dados",
+      sublabel: "Experiência em análise e inteligência de negócios",
+      color: "purple",
+      icon: "Clock",
+    },
+    {
+      id: "m3",
+      prefix: "+",
+      value: "15",
+      suffix: "",
+      label: "Processos Automatizados",
+      sublabel: "Redução de operações manuais críticas",
+      color: "green",
+      icon: "Zap",
+    },
+    {
+      id: "m4",
+      prefix: "",
+      value: "2019",
+      suffix: "",
+      label: "Estrutura de Dados",
+      sublabel: "Governança e modelagem desde o início",
+      color: "orange",
+      icon: "Database",
+    },
+  ],
+  about: {
+    text1:
+      "Atuo como especialista na interseção entre negócio e tecnologia, construindo soluções de inteligência analítica que transformam dados brutos em ativos estratégicos. Minha abordagem é sistêmica: da governança à entrega final de insights, com foco em escalabilidade e impacto real.",
+    text2:
+      "Especializado em modelar ambientes de dados complexos, integrar sistemas legados com camadas modernas de BI, e automatizar pipelines que antes consumiam horas de trabalho manual.",
+    highlights: [
+      "Governança de dados com foco em confiabilidade",
+      "Modelagem dimensional e semântica avançada",
+      "Automação de pipelines críticos",
+    ],
+    chartTitle: "Evolução da Maturidade Analítica",
+  },
+  techStack: [
+    {
+      id: "bi",
+      title: "BI & Visualização",
+      color: "cyan",
+      icon: "BarChart3",
+      techs: [
+        { name: "Power BI", level: 95 },
+        { name: "DAX", level: 98 },
+        { name: "Modelagem Dimensional", level: 88 },
+        { name: "M / Power Query", level: 85 },
+        { name: "Figma (Protótipos)", level: 76 },
+      ],
+    },
+    {
+      id: "de",
+      title: "Data Engineering",
+      color: "purple",
+      icon: "Settings",
+      techs: [
+        { name: "Python", level: 85 },
+        { name: "SQL", level: 92 },
+        { name: "APIs REST", level: 80 },
+        { name: "ETL Pipelines", level: 82 },
+        { name: "Banco de Dados", level: 85 },
+      ],
+    },
+    {
+      id: "auto",
+      title: "Automação",
+      color: "green",
+      icon: "Bot",
+      techs: [
+        { name: "Selenium", level: 88 },
+        { name: "Integrações ERP", level: 85 },
+        { name: "Web Scraping", level: 82 },
+        { name: "Pandas / Numpy", level: 80 },
+        { name: "Agendamento / Cron", level: 75 },
+      ],
+    },
+  ],
+  extraTechs: [
+    "Excel Avançado",
+    "SharePoint",
+    "Power Automate",
+    "Git",
+    "Notion",
+    "TOTVS / ERP",
+    "SAP",
+    "MySQL",
+    "PostgreSQL",
+    "Azure",
+  ],
+  projects: [
+    {
+      id: "p1",
+      tag: "Power BI + DAX",
+      tagColor: "cyan",
+      title: "Dashboard Executivo de Vendas",
+      subtitle: "Inteligência Comercial em Tempo Real",
+      problem:
+        "A diretoria não tinha visibilidade consolidada do funil de vendas, KPIs regionais e projeções, levando a decisões baseadas em planilhas desatualizadas.",
+      solution:
+        "Desenvolvi um ecossistema de BI com modelagem dimensional estrela, DAX avançado e atualização automática via Power Query integrado ao ERP.",
+      result:
+        "Reuniões de resultado passaram de 4h para 20min. 100% das decisões comerciais passaram a ser baseadas em dados em tempo real.",
+      metrics: [
+        { value: "95%", label: "Redução no preparo de relatórios" },
+        { value: "Real-time", label: "Atualização dos dados" },
+        { value: "+30", label: "KPIs monitorados" },
+      ],
+      color: "cyan",
+      icon: "TrendingUp",
+    },
+    {
+      id: "p2",
+      tag: "Python + Selenium",
+      tagColor: "purple",
+      title: "Automação de Coleta de Dados",
+      subtitle: "Eliminação de Processos Manuais Críticos",
+      problem:
+        "Equipe gastava 3h/dia coletando dados de portais externos, inserindo manualmente no ERP. Alto risco de erro humano e retrabalho constante.",
+      solution:
+        "Implementei robôs de automação com Selenium e Python para coleta, tratamento e inserção automática de dados, com logs de execução e alertas de falha.",
+      result:
+        "Processo de 3h/dia transformado em execução automática de 12min. Zero erros de digitação após implementação.",
+      metrics: [
+        { value: "93%", label: "Redução de tempo operacional" },
+        { value: "0", label: "Erros de digitação" },
+        { value: "12min", label: "Execução automatizada" },
+      ],
+      color: "purple",
+      icon: "Settings2",
+    },
+    {
+      id: "p3",
+      tag: "SQL + Python + BI",
+      tagColor: "green",
+      title: "Governança de Dados Corporativos",
+      subtitle: "Estrutura Analítica Escalável",
+      problem:
+        "Dados fragmentados em silos distintos (ERP, CRM, planilhas) causavam inconsistências nos relatórios e impossibilitavam análises cross-funcionais.",
+      solution:
+        "Projetei e implementei uma camada de dados unificada com Data Warehouse, dicionário de dados, processos de qualidade e catálogo semântico.",
+      result:
+        "Uma única fonte de verdade para toda a organização. Novos relatórios passaram a ser entregues 5x mais rápido.",
+      metrics: [
+        { value: "5x", label: "Velocidade de entrega de relatórios" },
+        { value: "100%", label: "Consistência entre áreas" },
+        { value: "1", label: "Fonte única de verdade" },
+      ],
+      color: "green",
+      icon: "Target",
+    },
+  ],
+  philosophy: {
+    quote:
+      "Decisões estratégicas não são baseadas em opinião. São baseadas em dados estruturados.",
+    author: "Vilcimar Rodrigues Pessoa",
+    principles: [
+      {
+        number: "01",
+        title: "Dados antes de Opiniões",
+        desc: "Toda decisão deve ser precedida de evidência. Intuição sem dados é aposta.",
+      },
+      {
+        number: "02",
+        title: "Contexto é tudo",
+        desc: "Um número sem contexto é ruído. A interpretação é onde o valor real mora.",
+      },
+      {
+        number: "03",
+        title: "Escala com Governança",
+        desc: "Velocidade sem estrutura gera caos. Consistência é a base de qualquer solução durável.",
+      },
+    ],
+  },
+  admin: {
+    password: "admin123",
+  },
+};
