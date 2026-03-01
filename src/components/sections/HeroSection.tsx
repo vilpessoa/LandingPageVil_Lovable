@@ -1,163 +1,192 @@
 import { motion } from "framer-motion";
-import { Download, Linkedin, ChevronDown } from "lucide-react";
+import { ArrowUpRight, Download } from "lucide-react";
 import type { PersonalData } from "@/types/site";
 
-interface HeroSectionProps {
-  personal: PersonalData;
-}
+interface Props { personal: PersonalData; }
 
-export function HeroSection({ personal }: HeroSectionProps) {
+const ROLES = ["Business Intelligence", "Automação de Processos", "Arquitetura Analítica", "Data Engineering"];
+
+export function HeroSection({ personal }: Props) {
   return (
-    <section
-      id="hero"
-      className="relative min-h-screen flex flex-col justify-center hero-bg diagonal-lines overflow-hidden"
-    >
-      {/* Decorative diagonal lines */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute top-1/4 right-1/4 w-px h-[400px] opacity-20"
-          style={{
-            background: "linear-gradient(to bottom, transparent, hsl(var(--cyan)), transparent)",
-            transform: "rotate(30deg)",
-          }}
-        />
-        <div
-          className="absolute top-1/3 right-1/3 w-px h-[300px] opacity-10"
-          style={{
-            background: "linear-gradient(to bottom, transparent, hsl(var(--purple)), transparent)",
-            transform: "rotate(30deg)",
-          }}
-        />
-      </div>
+    <section id="hero" style={{
+      position: "relative", minHeight: "100vh",
+      display: "flex", flexDirection: "column", justifyContent: "center",
+      overflow: "hidden",
+      background: "hsl(var(--background))",
+    }}>
+      {/* Dot grid */}
+      <div className="dot-grid" style={{ position: "absolute", inset: 0, opacity: 0.4, pointerEvents: "none" }} />
 
-      {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-5 backdrop-blur-md border-b border-border/50">
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="font-mono font-bold text-xl"
-        >
-          <span className="text-gradient-cyan">Vi</span>
-          <span className="text-foreground">l.</span>
-        </motion.span>
-        <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-          {["Sobre", "Stack", "Projetos", "Contato"].map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase()}`}
-              className="hover:text-foreground transition-colors"
-            >
-              {item}
-            </a>
-          ))}
-          <a
-            href="#contato"
-            className="px-4 py-1.5 rounded-md border border-foreground/30 text-foreground hover:bg-foreground/10 transition-colors text-sm"
-          >
-            Contato
-          </a>
-        </div>
-      </nav>
+      {/* Large ambient circle */}
+      <div style={{
+        position: "absolute", top: "-20%", right: "-10%",
+        width: 700, height: 700, borderRadius: "50%",
+        background: "radial-gradient(circle, hsl(var(--lime) / 0.06) 0%, transparent 70%)",
+        pointerEvents: "none",
+      }} />
+      <div style={{
+        position: "absolute", bottom: "-10%", left: "-5%",
+        width: 500, height: 500, borderRadius: "50%",
+        background: "radial-gradient(circle, hsl(var(--violet) / 0.05) 0%, transparent 70%)",
+        pointerEvents: "none",
+      }} />
 
-      {/* Hero content */}
-      <div className="container max-w-5xl px-8 pt-24">
+      {/* Floating badge — top right */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2, duration: 0.5 }}
+        style={{
+          position: "absolute", top: 100, right: 40,
+          padding: "10px 16px", borderRadius: 12,
+          background: "hsl(var(--card))", border: "1px solid hsl(var(--border))",
+          display: "flex", alignItems: "center", gap: 8,
+        }}
+        className="hidden lg:flex"
+      >
+        <span style={{
+          width: 8, height: 8, borderRadius: "50%",
+          background: "hsl(var(--lime))",
+        }} className="pulse-dot" />
+        <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 12, color: "hsl(var(--foreground) / 0.7)" }}>
+          {personal.available ? "Disponível para projetos" : "Indisponível"}
+        </span>
+      </motion.div>
+
+      {/* Stats sidebar — right */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 1.4, duration: 0.6 }}
+        style={{
+          position: "absolute", right: 40, bottom: 120,
+          display: "flex", flexDirection: "column", gap: 20,
+          alignItems: "flex-end",
+        }}
+        className="hidden xl:flex"
+      >
+        {[
+          { n: "+30", label: "Dashboards" },
+          { n: "+6", label: "Anos" },
+          { n: "+15", label: "Automações" },
+        ].map(({ n, label }) => (
+          <div key={label} style={{ textAlign: "right" }}>
+            <div style={{ fontFamily: "Syne, sans-serif", fontSize: 28, fontWeight: 800, color: "hsl(var(--lime))", lineHeight: 1 }}>{n}</div>
+            <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, color: "hsl(var(--muted-foreground))", textTransform: "uppercase", letterSpacing: "0.1em" }}>{label}</div>
+          </div>
+        ))}
+      </motion.div>
+
+      {/* Main content */}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px", paddingTop: 80 }}>
+        {/* Eyebrow */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          style={{ marginBottom: 28 }}
         >
-          {/* Available badge */}
-          {personal.available && (
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-foreground/20 text-sm text-foreground/80 mb-8 font-mono">
-              <span className="w-2 h-2 rounded-full bg-vi-green animate-pulse-glow" />
-              Disponível para novos projetos
+          <span className="eyebrow">Especialista em BI · {personal.location}</span>
+        </motion.div>
+
+        {/* Heading — large editorial */}
+        <motion.h1
+          initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            fontFamily: "Syne, sans-serif", fontWeight: 800,
+            fontSize: "clamp(52px, 8vw, 112px)",
+            lineHeight: 0.95, letterSpacing: "-0.03em",
+            marginBottom: 0,
+            color: "hsl(var(--foreground))",
+          }}
+        >
+          {personal.firstName}
+        </motion.h1>
+        <motion.h1
+          initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            fontFamily: "Syne, sans-serif", fontWeight: 800,
+            fontSize: "clamp(52px, 8vw, 112px)",
+            lineHeight: 0.95, letterSpacing: "-0.03em",
+            marginBottom: 32,
+          }}
+          className="text-gradient"
+        >
+          {personal.lastName.split(" ")[0]}
+        </motion.h1>
+
+        {/* Role + subtitle row */}
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          transition={{ delay: 0.45, duration: 0.5 }}
+          style={{ display: "flex", alignItems: "flex-start", gap: 40, flexWrap: "wrap", marginBottom: 48, maxWidth: 720 }}
+        >
+          <div style={{ flex: "0 0 auto" }}>
+            <div style={{
+              display: "inline-block", padding: "6px 14px", borderRadius: 6,
+              background: "hsl(var(--lime) / 0.1)", border: "1px solid hsl(var(--lime) / 0.3)",
+              fontFamily: "JetBrains Mono, monospace", fontSize: 13, fontWeight: 500,
+              color: "hsl(var(--lime))",
+            }}>
+              {personal.title}
             </div>
-          )}
-
-          {/* Name */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="text-6xl md:text-8xl font-bold leading-none mb-2"
-          >
-            <span className="text-gradient-cyan">{personal.firstName.charAt(0)}</span>
-            <span className="text-foreground">{personal.firstName.slice(1)}</span>
-          </motion.h1>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.6 }}
-            className="text-6xl md:text-8xl font-bold leading-none mb-6"
-          >
-            <span className="text-gradient-cyan">{personal.lastName.split(" ")[0]}</span>{" "}
-            <span className="text-gradient-purple">{personal.lastName.split(" ").slice(1).join(" ")}</span>
-          </motion.h1>
-
-          {/* Title */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="flex items-center gap-3 mb-6"
-          >
-            <span className="text-muted-foreground text-2xl">—</span>
-            <span className="text-xl text-foreground/90 font-medium">{personal.title}</span>
-          </motion.div>
-
-          {/* Headline */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="text-foreground/70 max-w-lg text-base leading-relaxed mb-10"
-          >
-            {personal.subtitle}
-            <br />
+          </div>
+          <p style={{ flex: 1, fontSize: 16, color: "hsl(var(--muted-foreground))", lineHeight: 1.7, minWidth: 260 }}>
             {personal.headline}
-          </motion.p>
+          </p>
+        </motion.div>
 
-          {/* CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="flex flex-wrap gap-4"
+        {/* CTA row */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+          style={{ display: "flex", gap: 12, flexWrap: "wrap" }}
+        >
+          <a href="#contact" style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "13px 28px", borderRadius: 8,
+            background: "hsl(var(--lime))", color: "hsl(var(--background))",
+            fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 14,
+            textDecoration: "none", transition: "all 0.2s",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "var(--glow-lime)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}
           >
-            <a
-              href={personal.cvUrl}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-md font-medium text-sm transition-all"
-              style={{
-                background: "linear-gradient(135deg, hsl(var(--cyan)), hsl(191 97% 40%))",
-                color: "hsl(var(--background))",
-              }}
-            >
-              <Download size={16} />
-              Download CV
-            </a>
-            <a
-              href={personal.linkedinUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-md border border-foreground/30 text-foreground/80 hover:bg-foreground/10 font-medium text-sm transition-all"
-            >
-              <Linkedin size={16} />
-              LinkedIn
-            </a>
-          </motion.div>
+            Fale comigo <ArrowUpRight size={16} />
+          </a>
+          <a href={personal.cvUrl} style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "13px 28px", borderRadius: 8,
+            background: "transparent", border: "1px solid hsl(var(--border))",
+            color: "hsl(var(--foreground))",
+            fontFamily: "Inter, sans-serif", fontWeight: 500, fontSize: 14,
+            textDecoration: "none", transition: "all 0.2s",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "hsl(var(--lime) / 0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "hsl(var(--border))"; e.currentTarget.style.transform = ""; }}
+          >
+            <Download size={15} /> Baixar CV
+          </a>
+        </motion.div>
+
+        {/* Scrolling roles marquee */}
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.6 }}
+          style={{ position: "absolute", bottom: 0, left: 0, right: 0, overflow: "hidden", borderTop: "1px solid hsl(var(--border))", padding: "14px 0" }}
+        >
+          <div className="marquee-track" style={{ display: "flex", gap: 48, whiteSpace: "nowrap", width: "max-content" }}>
+            {[...ROLES, ...ROLES, ...ROLES, ...ROLES].map((role, i) => (
+              <span key={i} style={{
+                fontFamily: "JetBrains Mono, monospace", fontSize: 12, fontWeight: 500,
+                color: i % 2 === 0 ? "hsl(var(--muted-foreground))" : "hsl(var(--lime) / 0.6)",
+                letterSpacing: "0.08em", textTransform: "uppercase",
+              }}>
+                {i % 2 === 0 ? "·" : "—"} {role}
+              </span>
+            ))}
+          </div>
         </motion.div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        className="absolute bottom-8 left-8 flex items-center gap-2 text-muted-foreground text-xs font-mono tracking-widest uppercase"
-      >
-        <ChevronDown size={14} className="animate-bounce" />
-        SCROLL
-      </motion.div>
     </section>
   );
 }
