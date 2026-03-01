@@ -13,22 +13,22 @@ export default function Index() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", background: "#0F172A", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "14px", color: "#9CA3AF" }}>Carregando...</span>
+      <div className="min-h-screen bg-[#080d1a] flex items-center justify-center">
+        <span className="font-['JetBrains_Mono'] text-[13px] text-white/30 animate-pulse">Carregando...</span>
       </div>
     );
   }
 
   return (
-    <div style={{ background: "#0F172A", minHeight: "100vh", overflowX: "hidden" }}>
+    <div className="bg-[#080d1a] min-h-screen overflow-x-hidden">
       <style>{`
         html { scroll-behavior: smooth; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0F172A; }
-        ::-webkit-scrollbar-thumb { background: rgba(0,194,255,0.3); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(0,194,255,0.5); }
-        ::selection { background: rgba(0,194,255,0.25); color: #F9FAFB; }
+        *, *::before, *::after { box-sizing: border-box; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #080d1a; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,194,255,0.25); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0,194,255,0.45); }
+        ::selection { background: rgba(0,194,255,0.2); color: #F1F5FB; }
       `}</style>
       <Navbar />
       <HeroSection personal={siteData.personal} />
