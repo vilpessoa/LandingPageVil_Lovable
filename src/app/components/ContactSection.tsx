@@ -67,14 +67,14 @@ export function ContactSection() {
           >
             <Linkedin size={18} /> Conectar no LinkedIn <ArrowUpRight size={16} />
           </a>
-          <a
-            href={personal.cvUrl || "#"}
-            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "16px 36px", borderRadius: "8px", background: "transparent", color: "#F9FAFB", fontFamily: "'Inter', sans-serif", fontSize: "15px", fontWeight: 600, textDecoration: "none", border: "1px solid rgba(255,255,255,0.12)", transition: "all 0.25s ease" }}
+          <button
+            onClick={() => window.print()}
+            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "16px 36px", borderRadius: "8px", background: "transparent", color: "#F9FAFB", fontFamily: "'Inter', sans-serif", fontSize: "15px", fontWeight: 600, border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer", transition: "all 0.25s ease" }}
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(0,194,255,0.3)"; e.currentTarget.style.color = "#00C2FF"; e.currentTarget.style.transform = "translateY(-2px)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; e.currentTarget.style.color = "#F9FAFB"; e.currentTarget.style.transform = "translateY(0)"; }}
           >
-            <Download size={18} /> Download CV
-          </a>
+            <Download size={18} /> Download
+          </button>
         </div>
       </div>
 
