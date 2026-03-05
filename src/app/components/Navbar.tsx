@@ -17,7 +17,6 @@ export function Navbar() {
     { label: "Sobre", href: "#about" },
     { label: "Stack", href: "#stack" },
     { label: "Projetos", href: "#projects" },
-    { label: "Contato", href: "#contact" },
   ];
 
   const logoName = "Vil";
@@ -167,6 +166,24 @@ export function Navbar() {
               {link.label}
             </a>
           ))}
+          <a
+            href="#contact"
+            onClick={() => setMenuOpen(false)}
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "13px",
+              fontWeight: 600,
+              color: "#0F172A",
+              background: "#00C2FF",
+              padding: "10px 20px",
+              borderRadius: "6px",
+              textDecoration: "none",
+              textAlign: "center",
+              transition: "all 0.2s ease",
+            }}
+          >
+            Contato
+          </a>
         </div>
       )}
     </nav>
