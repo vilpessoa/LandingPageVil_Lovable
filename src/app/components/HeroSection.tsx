@@ -107,15 +107,16 @@ export function HeroSection() {
 
         {/* CTAs */}
         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-          <button
-            onClick={() => window.print()}
-            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "14px 28px", borderRadius: "8px", background: "#00C2FF", color: "#0F172A", fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 700, border: "none", cursor: "pointer", transition: "all 0.25s ease" }}
+          <a
+            href="/Vilcimar_Portfolio.pdf"
+            download="Vilcimar_Portfolio.pdf"
+            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "14px 28px", borderRadius: "8px", background: "#00C2FF", color: "#0F172A", fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 700, border: "none", cursor: "pointer", textDecoration: "none", transition: "all 0.25s ease" }}
             onMouseEnter={(e) => { e.currentTarget.style.background = "#33CEFF"; e.currentTarget.style.boxShadow = "0 0 30px rgba(0,194,255,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "#00C2FF"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}
           >
             <Download size={16} />
             Download
-          </button>
+          </a>
           <a
             href={personal.linkedinUrl}
             target="_blank"
