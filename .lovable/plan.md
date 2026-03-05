@@ -1,18 +1,24 @@
 
 
-## Issues Identified
+## Problem
+The `<a download="...">` approach doesn't work reliably across all browsers and devices — especially on mobile and within iframe-based previews. The file either doesn't download or opens incorrectly.
 
-1. **"Contato" duplicated**: `navLinks` array includes "Contato" (line 20), and there's also a separate "Contato" CTA button (line 103-126). Remove "Contato" from the `navLinks` array so it only appears as the styled button.
+## Solution
+Create a helper function that uses `fetch()` + `Blob` + programmatic click to force a real download. This is the most reliable cross-platform approach.
 
-2. **Mobile menu not showing all links + CTA**: The mobile dropdown only renders `navLinks` items as plain text links. It needs to also include the "Contato" CTA button so mobile users can access it.
+### Changes
 
-## Plan
+**1. Create `src/app/utils/downloadFile.ts`**
+A utility function that:
+- Fetches `/Vilcimar_Portfolio.pdf` as a blob
+- Creates a temporary object URL
+- Programmatically clicks a hidden `<a>` element with the `download` attribute
+- Cleans up the object URL after download
 
-### 1. Remove "Contato" from `navLinks` array (line 20)
-Keep only: Sobre, Stack, Projetos.
+**2. Update `HeroSection.tsx`**
+- Replace the `<a href download>` with a `<button>` that calls the download utility on click
 
-### 2. Enhance mobile dropdown (lines 146-170)
-After the mapped nav links, add:
-- A "Contato" button styled consistently with the desktop CTA (cyan background, dark text)
-- This ensures mobile users have full navigation access
+**3. Update `ContactSection.tsx`**
+- Same change as HeroSection — use the download utility instead of native `<a download>`
 
+This approach works on desktop, mobile (iOS Safari, Android Chrome), and inside iframe previews.
