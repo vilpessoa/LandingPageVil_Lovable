@@ -97,6 +97,7 @@ const DEFAULT_DATA: SiteData = {
     linkedinUrl: "https://www.linkedin.com/in/",
     email: "vilcimar@email.com",
     location: "Brasil",
+    photoUrl: "",
   },
   metrics: [
     {

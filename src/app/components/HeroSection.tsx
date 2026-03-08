@@ -61,6 +61,64 @@ function LineChartDecor() {
   );
 }
 
+function ProfilePhoto({ photoUrl, initials }: { photoUrl: string; initials: string }) {
+  if (photoUrl) {
+    return (
+      <div style={{ position: "relative", flexShrink: 0, animation: "heroFloat 4s ease-in-out infinite" }}>
+        <div style={{
+          width: "280px",
+          height: "280px",
+          borderRadius: "50%",
+          padding: "3px",
+          background: "linear-gradient(135deg, #00C2FF, #7C3AED, #00C2FF)",
+          boxShadow: "0 0 40px rgba(0,194,255,0.2), 0 0 80px rgba(124,58,237,0.1)",
+        }}>
+          <img
+            src={photoUrl}
+            alt="Profile"
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "50%",
+              objectFit: "cover",
+              display: "block",
+              maskImage: "radial-gradient(ellipse at center, black 50%, transparent 78%)",
+              WebkitMaskImage: "radial-gradient(ellipse at center, black 50%, transparent 78%)",
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      flexShrink: 0,
+      width: "280px",
+      height: "280px",
+      borderRadius: "50%",
+      border: "2px dashed rgba(0,194,255,0.3)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      animation: "heroFloat 4s ease-in-out infinite",
+    }}>
+      <span style={{
+        fontFamily: "'Space Grotesk', sans-serif",
+        fontSize: "64px",
+        fontWeight: 700,
+        background: "linear-gradient(135deg, #00C2FF, #7C3AED)",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+        backgroundClip: "text",
+        opacity: 0.6,
+      }}>
+        {initials}
+      </span>
+    </div>
+  );
+}
+
 export function HeroSection() {
   const { data } = useSiteData();
   const { personal } = data;
@@ -80,6 +138,7 @@ export function HeroSection() {
 
   const firstLetter = personal.firstName.charAt(0);
   const restFirst = personal.firstName.slice(1);
+  const initials = `${personal.firstName.charAt(0)}${personal.lastName.charAt(0)}`;
 
   return (
     <section id="hero" style={{ position: "relative", minHeight: "100vh", background: "linear-gradient(135deg, #0F172A 0%, #111827 50%, #0F172A 100%)", display: "flex", alignItems: "center", overflow: "hidden" }}>
@@ -88,57 +147,66 @@ export function HeroSection() {
       <div style={{ position: "absolute", top: "20%", right: "15%", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, rgba(0,194,255,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
       <div style={{ position: "absolute", bottom: "10%", left: "5%", width: "300px", height: "300px", borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "120px 24px 80px", position: "relative", zIndex: 1 }}>
-        {personal.available && (
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 14px", borderRadius: "100px", border: "1px solid rgba(0,194,255,0.25)", background: "rgba(0,194,255,0.06)", marginBottom: "32px" }}>
-            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10B981", boxShadow: "0 0 8px #10B981", animation: "pulse 2s ease-in-out infinite" }} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "#00C2FF", letterSpacing: "0.05em" }}>
-              Disponível para novos projetos
-            </span>
-          </div>
-        )}
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "120px 24px 80px", position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: "48px", flexWrap: "wrap" }}>
 
-        <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "clamp(42px, 6vw, 72px)", fontWeight: 700, color: "#F9FAFB", lineHeight: 1.05, letterSpacing: "-2px", marginBottom: "12px" }}>
-          <span style={{ color: "#00C2FF" }}>{firstLetter}</span>{restFirst}
-          <br />
-          <span style={{ background: "linear-gradient(90deg, #00C2FF, #7C3AED)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-            {personal.lastName}
-          </span>
-        </h1>
-
-        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
-          <div style={{ width: "32px", height: "2px", background: "#00C2FF" }} />
-          <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "clamp(16px, 2vw, 22px)", fontWeight: 500, color: "#9CA3AF", letterSpacing: "0.02em" }}>
-            {personal.title}
-          </span>
+        {/* Photo — Left */}
+        <div className="hero-photo-container" style={{ display: "flex", justifyContent: "center" }}>
+          <ProfilePhoto photoUrl={personal.photoUrl} initials={initials} />
         </div>
 
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "clamp(15px, 1.8vw, 18px)", color: "#9CA3AF", maxWidth: "520px", lineHeight: 1.7, marginBottom: "48px" }}>
-          {personal.subtitle}. {personal.headline}
-        </p>
+        {/* Content — Right */}
+        <div style={{ flex: 1, minWidth: "300px" }}>
+          {personal.available && (
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 14px", borderRadius: "100px", border: "1px solid rgba(0,194,255,0.25)", background: "rgba(0,194,255,0.06)", marginBottom: "32px" }}>
+              <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10B981", boxShadow: "0 0 8px #10B981", animation: "pulse 2s ease-in-out infinite" }} />
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "#00C2FF", letterSpacing: "0.05em" }}>
+                Disponível para novos projetos
+              </span>
+            </div>
+          )}
 
-        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-          <button
-            onClick={handleDownload}
-            disabled={generating}
-            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "14px 28px", borderRadius: "8px", background: generating ? "#0099CC" : "#00C2FF", color: "#0F172A", fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 700, border: "none", cursor: generating ? "wait" : "pointer", textDecoration: "none", transition: "all 0.25s ease", opacity: generating ? 0.8 : 1 }}
-            onMouseEnter={(e) => { if (!generating) { e.currentTarget.style.background = "#33CEFF"; e.currentTarget.style.boxShadow = "0 0 30px rgba(0,194,255,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; } }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = generating ? "#0099CC" : "#00C2FF"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}
-          >
-            {generating ? <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /> : <Download size={16} />}
-            {generating ? "Gerando..." : "Download"}
-          </button>
-          <a
-            href={personal.linkedinUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "14px 28px", borderRadius: "8px", background: "transparent", color: "#F9FAFB", fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 600, textDecoration: "none", border: "1px solid rgba(249,250,251,0.15)", transition: "all 0.25s ease" }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#00C2FF"; e.currentTarget.style.color = "#00C2FF"; e.currentTarget.style.boxShadow = "0 0 20px rgba(0,194,255,0.15)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(249,250,251,0.15)"; e.currentTarget.style.color = "#F9FAFB"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}
-          >
-            <Linkedin size={16} />
-            LinkedIn
-          </a>
+          <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "clamp(42px, 6vw, 72px)", fontWeight: 700, color: "#F9FAFB", lineHeight: 1.05, letterSpacing: "-2px", marginBottom: "12px" }}>
+            <span style={{ color: "#00C2FF" }}>{firstLetter}</span>{restFirst}
+            <br />
+            <span style={{ background: "linear-gradient(90deg, #00C2FF, #7C3AED)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+              {personal.lastName}
+            </span>
+          </h1>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
+            <div style={{ width: "32px", height: "2px", background: "#00C2FF" }} />
+            <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "clamp(16px, 2vw, 22px)", fontWeight: 500, color: "#9CA3AF", letterSpacing: "0.02em" }}>
+              {personal.title}
+            </span>
+          </div>
+
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "clamp(15px, 1.8vw, 18px)", color: "#9CA3AF", maxWidth: "520px", lineHeight: 1.7, marginBottom: "48px" }}>
+            {personal.subtitle}. {personal.headline}
+          </p>
+
+          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+            <button
+              onClick={handleDownload}
+              disabled={generating}
+              style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "14px 28px", borderRadius: "8px", background: generating ? "#0099CC" : "#00C2FF", color: "#0F172A", fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 700, border: "none", cursor: generating ? "wait" : "pointer", textDecoration: "none", transition: "all 0.25s ease", opacity: generating ? 0.8 : 1 }}
+              onMouseEnter={(e) => { if (!generating) { e.currentTarget.style.background = "#33CEFF"; e.currentTarget.style.boxShadow = "0 0 30px rgba(0,194,255,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; } }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = generating ? "#0099CC" : "#00C2FF"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}
+            >
+              {generating ? <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /> : <Download size={16} />}
+              {generating ? "Gerando..." : "Download"}
+            </button>
+            <a
+              href={personal.linkedinUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "14px 28px", borderRadius: "8px", background: "transparent", color: "#F9FAFB", fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 600, textDecoration: "none", border: "1px solid rgba(249,250,251,0.15)", transition: "all 0.25s ease" }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#00C2FF"; e.currentTarget.style.color = "#00C2FF"; e.currentTarget.style.boxShadow = "0 0 20px rgba(0,194,255,0.15)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(249,250,251,0.15)"; e.currentTarget.style.color = "#F9FAFB"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}
+            >
+              <Linkedin size={16} />
+              LinkedIn
+            </a>
+          </div>
         </div>
 
         <div style={{ position: "absolute", bottom: "-40px", left: "0", display: "flex", alignItems: "center", gap: "8px", color: "#9CA3AF", animation: "bounce 2s ease-in-out infinite" }}>
@@ -151,6 +219,12 @@ export function HeroSection() {
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes heroFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @media (max-width: 768px) {
+          .hero-photo-container { width: 100% !important; }
+          .hero-photo-container > div { width: 180px !important; height: 180px !important; }
+          .hero-photo-container > div > div { width: 180px !important; height: 180px !important; }
+        }
       `}</style>
     </section>
   );
