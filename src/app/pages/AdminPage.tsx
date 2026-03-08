@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import {
   LogOut, Eye, User, BarChart3, Info, Layers, FolderKanban,
