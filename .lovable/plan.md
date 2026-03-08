@@ -1,24 +1,41 @@
 
 
-## Problem
-The `<a download="...">` approach doesn't work reliably across all browsers and devices — especially on mobile and within iframe-based previews. The file either doesn't download or opens incorrectly.
+## Hero Profile Photo — Foto à Esquerda
 
-## Solution
-Create a helper function that uses `fetch()` + `Blob` + programmatic click to force a real download. This is the most reliable cross-platform approach.
+### Alterações
 
-### Changes
+**1. Migration SQL — Criar bucket `profile` no Storage**
+- Bucket público para armazenar a foto de perfil
+- RLS: leitura pública, upload/delete para authenticated
 
-**1. Create `src/app/utils/downloadFile.ts`**
-A utility function that:
-- Fetches `/Vilcimar_Portfolio.pdf` as a blob
-- Creates a temporary object URL
-- Programmatically clicks a hidden `<a>` element with the `download` attribute
-- Cleans up the object URL after download
+**2. DataContext.tsx — Adicionar `photoUrl` ao `personal`**
+- Novo campo `photoUrl: string` (default `""`)
 
-**2. Update `HeroSection.tsx`**
-- Replace the `<a href download>` with a `<button>` that calls the download utility on click
+**3. HeroSection.tsx — Foto à esquerda com fade**
+- Layout muda para `display: flex` com dois colunas: foto (esquerda) + conteúdo (direita)
+- Foto circular/arredondada (~280px) com borda glow cyan/purple gradient
+- `mask-image: radial-gradient(...)` para fade suave nas bordas
+- Animação flutuante lenta (translateY, 4s)
+- Se `photoUrl` vazio: placeholder com iniciais + borda tracejada
+- Mobile: foto acima do conteúdo, centralizada, menor (~180px)
 
-**3. Update `ContactSection.tsx`**
-- Same change as HeroSection — use the download utility instead of native `<a download>`
+```text
+┌──────────────────────────────────────────────┐
+│  ┌──────────┐   [Available badge]            │
+│  │          │                                │
+│  │  PHOTO   │   Vilcimar                     │
+│  │ (faded)  │   Rodrigues Pessoa             │
+│  │          │   ── BI Specialist             │
+│  └──────────┘   Subtitle text...             │
+│                 [Download] [LinkedIn]         │
+│                                              │
+│  ▼ SCROLL                                    │
+└──────────────────────────────────────────────┘
+```
 
-This approach works on desktop, mobile (iOS Safari, Android Chrome), and inside iframe previews.
+**4. AdminPage.tsx — Upload de foto no PersonalEditor**
+- Campo "Foto de Perfil" com preview da imagem atual
+- Input file que faz upload para bucket `profile` via Supabase Storage
+- Obtém public URL e salva em `form.photoUrl`
+- Botão de remover foto
+
