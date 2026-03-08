@@ -347,15 +347,23 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     const loadRemote = async () => {
       try {
-        const response = await fetch(API_ENDPOINT);
-        if (!response.ok) return;
-        const remote = await response.json();
+        const { data: rows, error } = await supabase
+          .from("site_data")
+          .select("section, content");
+
+        if (error || !rows || rows.length === 0) return;
         if (!active) return;
+
+        const remote: Partial<SiteData> = {};
+        for (const row of rows) {
+          (remote as any)[row.section] = row.content;
+        }
+
         const merged = mergeWithDefaults(remote);
         setData(merged);
         saveData(merged);
       } catch {
-        // Optional endpoint: keep local cache when API is unavailable.
+        // Keep local cache when DB is unavailable.
       }
     };
 
@@ -365,13 +373,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const persistRemote = async (next: SiteData) => {
+  const persistSection = async (section: string, content: unknown) => {
     try {
-      await fetch(API_ENDPOINT, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(next),
-      });
+      await supabase
+        .from("site_data")
+        .upsert(
+          { section, content: content as any, updated_at: new Date().toISOString() },
+          { onConflict: "section" }
+        );
     } catch {
       // Local cache still preserves admin updates in this browser.
     }
