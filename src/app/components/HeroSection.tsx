@@ -64,6 +64,13 @@ function LineChartDecor() {
 export function HeroSection() {
   const { data } = useSiteData();
   const { personal } = data;
+  const [generating, setGenerating] = useState(false);
+
+  const handleDownload = async () => {
+    setGenerating(true);
+    try { await generatePDF(); } catch (e) { console.error(e); }
+    setGenerating(false);
+  };
   const firstLetter = personal.firstName.charAt(0);
   const restFirst = personal.firstName.slice(1);
 
