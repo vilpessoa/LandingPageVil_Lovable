@@ -1,26 +1,24 @@
 
 
-## Carrossel com fade transition + peek dos slides adjacentes
+## Problem
+The `<a download="...">` approach doesn't work reliably across all browsers and devices — especially on mobile and within iframe-based previews. The file either doesn't download or opens incorrectly.
 
-### O que muda
+## Solution
+Create a helper function that uses `fetch()` + `Blob` + programmatic click to force a real download. This is the most reliable cross-platform approach.
 
-**1. Fade transition entre slides**
-- Adicionar estado `animating` + CSS transition no container do card
-- Ao trocar slide: fade-out (opacity 0, 300ms) → trocar index → fade-in (opacity 1, 300ms)
-- Usar `onTransitionEnd` para sincronizar a troca do index com o fim do fade-out
+### Changes
 
-**2. Peek/sombra dos slides adjacentes**
-- Mudar o layout do carrossel: em vez de mostrar só 1 card, renderizar 3 (prev, current, next) lado a lado com `display: flex` e `overflow: visible` no container externo
-- O card central fica em `opacity: 1, scale(1)`, os laterais ficam com `opacity: 0.3, scale(0.9)`, parcialmente visíveis atrás das setas
-- Aplicar gradient mask nas bordas esquerda/direita do container (`overflow: hidden` no wrapper externo) para criar efeito de "escondido"
-- Os cards laterais servem como hint visual — o usuário vê que há mais conteúdo
+**1. Create `src/app/utils/downloadFile.ts`**
+A utility function that:
+- Fetches `/Vilcimar_Portfolio.pdf` as a blob
+- Creates a temporary object URL
+- Programmatically clicks a hidden `<a>` element with the `download` attribute
+- Cleans up the object URL after download
 
-**3. Estrutura técnica**
-- Container externo: `overflow: hidden` com padding lateral (~60px) para revelar parte dos cards adjacentes
-- Dentro: flex com 3 cards posicionados via `transform: translateX()` baseado no index atual
-- Transição CSS: `transition: transform 0.5s ease, opacity 0.4s ease`
-- Cards prev/next: `pointer-events: none`, `opacity: 0.25`, `scale: 0.92`, `filter: blur(1px)`
+**2. Update `HeroSection.tsx`**
+- Replace the `<a href download>` with a `<button>` that calls the download utility on click
 
-### Arquivo alterado
-- `src/app/components/ProjectsSection.tsx` — reescrever a lógica de exibição do carrossel mantendo o `ProjectCard` intacto
+**3. Update `ContactSection.tsx`**
+- Same change as HeroSection — use the download utility instead of native `<a download>`
 
+This approach works on desktop, mobile (iOS Safari, Android Chrome), and inside iframe previews.

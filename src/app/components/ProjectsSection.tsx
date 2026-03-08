@@ -25,8 +25,6 @@ function ProjectCard({ project }: { project: any }) {
         padding: "36px",
         position: "relative",
         overflow: "hidden",
-        maxWidth: "700px",
-        margin: "0 auto",
         width: "100%",
       }}
     >
@@ -74,18 +72,12 @@ function ProjectCard({ project }: { project: any }) {
         ))}
       </div>
 
-      {/* Project Image */}
       {project.imageUrl && (
         <div style={{ marginTop: "20px", borderRadius: "10px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.06)" }}>
-          <img
-            src={project.imageUrl}
-            alt={project.title}
-            style={{ width: "100%", height: "200px", objectFit: "cover", display: "block" }}
-          />
+          <img src={project.imageUrl} alt={project.title} style={{ width: "100%", height: "200px", objectFit: "cover", display: "block" }} />
         </div>
       )}
 
-      {/* Project Link */}
       {project.projectUrl && (
         <div style={{ marginTop: "16px", display: "flex", justifyContent: "center" }}>
           <a
@@ -93,28 +85,13 @@ function ProjectCard({ project }: { project: any }) {
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "10px 24px",
-              borderRadius: "8px",
-              background: `${project.color}15`,
-              border: `1px solid ${project.color}30`,
-              color: project.color,
-              fontFamily: "'Inter', sans-serif",
-              fontSize: "14px",
-              fontWeight: 600,
-              textDecoration: "none",
-              transition: "all 0.3s ease",
+              display: "inline-flex", alignItems: "center", gap: "8px", padding: "10px 24px",
+              borderRadius: "8px", background: `${project.color}15`, border: `1px solid ${project.color}30`,
+              color: project.color, fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 600,
+              textDecoration: "none", transition: "all 0.3s ease",
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = `${project.color}25`;
-              e.currentTarget.style.boxShadow = `0 0 20px ${project.color}15`;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = `${project.color}15`;
-              e.currentTarget.style.boxShadow = "none";
-            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = `${project.color}25`; e.currentTarget.style.boxShadow = `0 0 20px ${project.color}15`; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = `${project.color}15`; e.currentTarget.style.boxShadow = "none"; }}
           >
             <ExternalLink size={16} />
             Acesse o projeto
@@ -129,12 +106,26 @@ export function ProjectsSection() {
   const { data } = useSiteData();
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [fadeState, setFadeState] = useState<"visible" | "fading">("visible");
+  const [pendingIndex, setPendingIndex] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const total = data.projects.length;
 
   const goTo = useCallback((idx: number) => {
-    setCurrent(((idx % total) + total) % total);
-  }, [total]);
+    const next = ((idx % total) + total) % total;
+    if (next === current) return;
+    setPendingIndex(next);
+    setFadeState("fading");
+  }, [total, current]);
+
+  const handleTransitionEnd = useCallback(() => {
+    if (fadeState === "fading" && pendingIndex !== null) {
+      setCurrent(pendingIndex);
+      setPendingIndex(null);
+      // Small delay to allow React to render the new card before fading in
+      requestAnimationFrame(() => setFadeState("visible"));
+    }
+  }, [fadeState, pendingIndex]);
 
   const next = useCallback(() => goTo(current + 1), [current, goTo]);
   const prev = useCallback(() => goTo(current - 1), [current, goTo]);
@@ -143,12 +134,20 @@ export function ProjectsSection() {
   useEffect(() => {
     if (paused || total <= 1) return;
     timerRef.current = setInterval(() => {
-      setCurrent((c) => (c + 1) % total);
+      setCurrent((c) => {
+        const nextIdx = (c + 1) % total;
+        setPendingIndex(nextIdx);
+        setFadeState("fading");
+        return c; // don't change yet
+      });
     }, 5000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [paused, total]);
 
   if (total === 0) return null;
+
+  const prevIdx = ((current - 1) + total) % total;
+  const nextIdx = (current + 1) % total;
 
   return (
     <section
@@ -168,7 +167,7 @@ export function ProjectsSection() {
           </p>
         </div>
 
-        {/* Carousel */}
+        {/* Carousel with peek */}
         <div style={{ position: "relative" }}>
           {/* Navigation arrows */}
           {total > 1 && (
@@ -177,14 +176,14 @@ export function ProjectsSection() {
                 onClick={prev}
                 aria-label="Projeto anterior"
                 style={{
-                  position: "absolute", top: "50%", left: "-16px", transform: "translateY(-50%)",
-                  zIndex: 10, width: "40px", height: "40px", borderRadius: "50%",
-                  background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                  position: "absolute", top: "50%", left: "0px", transform: "translateY(-50%)",
+                  zIndex: 20, width: "40px", height: "40px", borderRadius: "50%",
+                  background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)",
                   color: "#F9FAFB", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "all 0.2s",
+                  transition: "all 0.2s", backdropFilter: "blur(8px)",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.15)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
               >
                 <ChevronLeft size={20} />
               </button>
@@ -192,23 +191,83 @@ export function ProjectsSection() {
                 onClick={next}
                 aria-label="Próximo projeto"
                 style={{
-                  position: "absolute", top: "50%", right: "-16px", transform: "translateY(-50%)",
-                  zIndex: 10, width: "40px", height: "40px", borderRadius: "50%",
-                  background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                  position: "absolute", top: "50%", right: "0px", transform: "translateY(-50%)",
+                  zIndex: 20, width: "40px", height: "40px", borderRadius: "50%",
+                  background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)",
                   color: "#F9FAFB", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "all 0.2s",
+                  transition: "all 0.2s", backdropFilter: "blur(8px)",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.15)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
               >
                 <ChevronRight size={20} />
               </button>
             </>
           )}
 
-          {/* Slide */}
-          <div style={{ overflow: "hidden", padding: "0 8px" }}>
-            <ProjectCard project={data.projects[current]} />
+          {/* Slides container with peek effect */}
+          <div style={{
+            overflow: "hidden",
+            margin: "0 -20px",
+            padding: "0 20px",
+            maskImage: "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
+          }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "20px",
+                padding: "0 40px",
+              }}
+            >
+              {/* Previous card (peek) */}
+              {total > 1 && (
+                <div
+                  style={{
+                    flex: "0 0 280px",
+                    opacity: 0.2,
+                    transform: "scale(0.88)",
+                    filter: "blur(1.5px)",
+                    pointerEvents: "none",
+                    transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                >
+                  <ProjectCard project={data.projects[prevIdx]} />
+                </div>
+              )}
+
+              {/* Current card */}
+              <div
+                onTransitionEnd={handleTransitionEnd}
+                style={{
+                  flex: "0 1 700px",
+                  minWidth: 0,
+                  opacity: fadeState === "fading" ? 0 : 1,
+                  transform: fadeState === "fading" ? "scale(0.97)" : "scale(1)",
+                  transition: "opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+                }}
+              >
+                <ProjectCard project={data.projects[current]} />
+              </div>
+
+              {/* Next card (peek) */}
+              {total > 1 && (
+                <div
+                  style={{
+                    flex: "0 0 280px",
+                    opacity: 0.2,
+                    transform: "scale(0.88)",
+                    filter: "blur(1.5px)",
+                    pointerEvents: "none",
+                    transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                >
+                  <ProjectCard project={data.projects[nextIdx]} />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Dot indicators */}
