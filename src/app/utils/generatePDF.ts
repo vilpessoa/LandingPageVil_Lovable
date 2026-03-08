@@ -469,5 +469,14 @@ export async function generatePDF(data: SiteData): Promise<void> {
   renderPhilosophyContact(pdf, data);
   drawFooter(pdf, page, totalPages);
 
-  pdf.save("Vilcimar_Portfolio.pdf");
+  const blob = pdf.output("blob");
+  const blobUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = blobUrl;
+  link.download = "Vilcimar_Portfolio.pdf";
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(blobUrl);
 }
