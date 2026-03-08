@@ -62,6 +62,7 @@ export interface SiteData {
     linkedinUrl: string;
     email: string;
     location: string;
+    photoUrl: string;
   };
   metrics: MetricItem[];
   about: {
@@ -96,6 +97,7 @@ const DEFAULT_DATA: SiteData = {
     linkedinUrl: "https://www.linkedin.com/in/",
     email: "vilcimar@email.com",
     location: "Brasil",
+    photoUrl: "",
   },
   metrics: [
     {
