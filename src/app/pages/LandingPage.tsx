@@ -6,7 +6,6 @@ import { TechStackSection } from "../components/TechStackSection";
 import { ProjectsSection } from "../components/ProjectsSection";
 import { PhilosophySection } from "../components/PhilosophySection";
 import { ContactSection } from "../components/ContactSection";
-import { PrintPage } from "./PrintPage";
 
 export function LandingPage() {
   return (
