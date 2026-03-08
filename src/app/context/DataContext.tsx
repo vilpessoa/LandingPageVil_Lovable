@@ -63,6 +63,9 @@ export interface SiteData {
     email: string;
     location: string;
     photoUrl: string;
+    photoScale: number;
+    photoOffsetX: number;
+    photoOffsetY: number;
   };
   metrics: MetricItem[];
   about: {
@@ -98,6 +101,9 @@ const DEFAULT_DATA: SiteData = {
     email: "vilcimar@email.com",
     location: "Brasil",
     photoUrl: "",
+    photoScale: 1,
+    photoOffsetX: 0,
+    photoOffsetY: 0,
   },
   metrics: [
     {
