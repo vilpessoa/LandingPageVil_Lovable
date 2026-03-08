@@ -1,5 +1,6 @@
 import { Download, Linkedin, ChevronDown } from "lucide-react";
 import { useSiteData } from "../context/DataContext";
+import { downloadFile } from "../utils/downloadFile";
 
 function AnimatedGridLines() {
   return (
