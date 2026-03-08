@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Linkedin, Mail, MapPin, ArrowUpRight, Download } from "lucide-react";
 import { useSiteData } from "../context/DataContext";
+import { downloadFile } from "../utils/downloadFile";
 
 function DownloadButton() {
   return (
