@@ -10,7 +10,7 @@ function DownloadButton() {
     if (generating) return;
     setGenerating(true);
     try {
-      await generatePDF();
+      await generatePDF(fileName);
     } catch (err) {
       console.error("PDF generation failed:", err);
     } finally {

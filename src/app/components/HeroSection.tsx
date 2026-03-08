@@ -149,7 +149,7 @@ export function HeroSection() {
     if (generating) return;
     setGenerating(true);
     try {
-      await generatePDF();
+      await generatePDF(personal.cvUrl);
     } catch (err) {
       console.error("PDF generation failed:", err);
     } finally {
