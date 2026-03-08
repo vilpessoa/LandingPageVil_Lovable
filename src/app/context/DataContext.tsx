@@ -63,6 +63,9 @@ export interface SiteData {
     email: string;
     location: string;
     photoUrl: string;
+    photoScale: number;
+    photoOffsetX: number;
+    photoOffsetY: number;
   };
   metrics: MetricItem[];
   about: {
