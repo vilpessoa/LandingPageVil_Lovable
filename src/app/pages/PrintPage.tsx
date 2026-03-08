@@ -219,16 +219,15 @@ export function PrintPage({ embedded }: { embedded?: boolean }) {
           )}
         </div>
 
-        {/* Projects — 2 per page */}
-        <div className="section-block page-alt" style={{ paddingBottom: "24px" }}>
-          <div style={{ textAlign: "center", marginBottom: "28px" }}>
-            <div className="section-label" style={{ color: "#7C3AED" }}>// casos de sucesso</div>
-            <h2 className="section-title" style={{ fontSize: "28px", color: "#F9FAFB" }}>Projetos Estratégicos</h2>
-          </div>
-        </div>
-
+        {/* Projects — each project is its own section-block */}
         {projects.map((project, pi) => (
-          <div key={project.id} className={`section-block ${pi % 2 === 0 ? "page-alt" : "page-dark"}`} style={{ paddingTop: pi === 0 ? "0" : "24px", paddingBottom: "24px" }}>
+          <div key={project.id} className={`section-block ${pi % 2 === 0 ? "page-alt" : "page-dark"} page-break`} style={{ paddingTop: "48px", paddingBottom: "24px" }}>
+            {pi === 0 && (
+              <div style={{ textAlign: "center", marginBottom: "28px" }}>
+                <div className="section-label" style={{ color: "#7C3AED" }}>// casos de sucesso</div>
+                <h2 className="section-title" style={{ fontSize: "28px", color: "#F9FAFB" }}>Projetos Estratégicos</h2>
+              </div>
+            )}
             <div style={{ background: "linear-gradient(135deg, rgba(17,24,39,0.95) 0%, rgba(15,23,42,0.98) 100%)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "14px", padding: "28px", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: 0, right: 0, width: "120px", height: "120px", background: `radial-gradient(circle at top right, ${project.color}08 0%, transparent 70%)` }} />
 

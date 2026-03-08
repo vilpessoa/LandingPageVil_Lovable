@@ -1,21 +1,23 @@
 import html2canvas from "html2canvas-pro";
 import { jsPDF } from "jspdf";
 
+const PX_PER_MM = 794 / 210; // 794px = 210mm (A4 width)
+const PAGE_HEIGHT_MM = 297;
+const PAGE_WIDTH_MM = 210;
+
 export async function generatePDF(): Promise<void> {
-  // Create an off-screen iframe to render /print
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";
   iframe.style.left = "-9999px";
   iframe.style.top = "0";
   iframe.style.width = "794px";
-  iframe.style.height = "1123px";
+  iframe.style.height = "5000px"; // tall enough for all content
   iframe.style.border = "none";
   iframe.style.opacity = "0";
   iframe.style.pointerEvents = "none";
   document.body.appendChild(iframe);
 
   try {
-    // Load /print in the iframe
     await new Promise<void>((resolve, reject) => {
       iframe.onload = () => resolve();
       iframe.onerror = () => reject(new Error("Failed to load print page"));
@@ -23,68 +25,75 @@ export async function generatePDF(): Promise<void> {
     });
 
     // Wait for fonts and rendering
-    await new Promise((r) => setTimeout(r, 2000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     const printPage = iframe.contentDocument?.querySelector(".print-page") as HTMLElement;
     if (!printPage) throw new Error("Print page not found");
 
-    // Get all section blocks
-    const sections = printPage.querySelectorAll(".section-block");
-    
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-    });
+    const sections = Array.from(printPage.querySelectorAll(".section-block")) as HTMLElement[];
+    if (sections.length === 0) throw new Error("No sections found");
 
-    const pageWidth = 210; // A4 width in mm
-    const pageHeight = 297; // A4 height in mm
+    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
-    // Capture the entire print page as one tall canvas
-    const canvas = await html2canvas(printPage, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#0F172A",
-      width: 794,
-      windowWidth: 794,
-      logging: false,
-    });
+    // Capture each section individually
+    const sectionCanvases: { canvas: HTMLCanvasElement; hasPageBreak: boolean }[] = [];
 
-    const imgData = canvas.toDataURL("image/jpeg", 0.95);
-    const canvasAspect = canvas.height / canvas.width;
-    const totalHeightMM = pageWidth * canvasAspect;
+    for (const section of sections) {
+      const canvas = await html2canvas(section, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#0F172A",
+        width: 794,
+        windowWidth: 794,
+        logging: false,
+      });
+      const hasPageBreak = section.classList.contains("page-break");
+      sectionCanvases.push({ canvas, hasPageBreak });
+    }
 
-    // Split into A4 pages
-    const totalPages = Math.ceil(totalHeightMM / pageHeight);
+    // Group sections into pages
+    let currentYMM = 0;
+    let isFirstPage = true;
 
-    for (let i = 0; i < totalPages; i++) {
-      if (i > 0) pdf.addPage();
+    for (let i = 0; i < sectionCanvases.length; i++) {
+      const { canvas, hasPageBreak } = sectionCanvases[i];
+      const sectionHeightMM = (canvas.height / canvas.width) * PAGE_WIDTH_MM;
 
-      // Calculate source crop for this page
-      const srcY = (i * pageHeight / totalHeightMM) * canvas.height;
-      const srcH = (pageHeight / totalHeightMM) * canvas.height;
+      // Check if this section fits on the current page
+      if (!isFirstPage && currentYMM + sectionHeightMM > PAGE_HEIGHT_MM + 1) {
+        // Doesn't fit — start new page
+        pdf.addPage();
+        currentYMM = 0;
+      }
 
-      // Create a cropped canvas for this page
-      const pageCanvas = document.createElement("canvas");
-      pageCanvas.width = canvas.width;
-      pageCanvas.height = Math.min(srcH, canvas.height - srcY);
-      const ctx = pageCanvas.getContext("2d");
-      if (!ctx) continue;
+      if (!isFirstPage && currentYMM === 0) {
+        // We just added a page, no need to add another
+      } else if (isFirstPage) {
+        isFirstPage = false;
+      }
 
-      // Fill background
-      ctx.fillStyle = "#0F172A";
-      ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+      // Draw section on current page
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+      pdf.addImage(imgData, "JPEG", 0, currentYMM, PAGE_WIDTH_MM, sectionHeightMM);
 
-      ctx.drawImage(
-        canvas,
-        0, srcY, canvas.width, pageCanvas.height,
-        0, 0, pageCanvas.width, pageCanvas.height
-      );
+      currentYMM += sectionHeightMM;
 
-      const pageImgData = pageCanvas.toDataURL("image/jpeg", 0.95);
-      const pageImgHeight = (pageCanvas.height / pageCanvas.width) * pageWidth;
+      // If section has page-break, force new page for next section
+      if (hasPageBreak && i < sectionCanvases.length - 1) {
+        // Fill remaining space with background color
+        if (currentYMM < PAGE_HEIGHT_MM) {
+          pdf.setFillColor(15, 23, 42); // #0F172A
+          pdf.rect(0, currentYMM, PAGE_WIDTH_MM, PAGE_HEIGHT_MM - currentYMM, "F");
+        }
+        pdf.addPage();
+        currentYMM = 0;
+      }
+    }
 
-      pdf.addImage(pageImgData, "JPEG", 0, 0, pageWidth, pageImgHeight);
+    // Fill remaining space on last page
+    if (currentYMM < PAGE_HEIGHT_MM && currentYMM > 0) {
+      pdf.setFillColor(15, 23, 42);
+      pdf.rect(0, currentYMM, PAGE_WIDTH_MM, PAGE_HEIGHT_MM - currentYMM, "F");
     }
 
     pdf.save("Vilcimar_Portfolio.pdf");
