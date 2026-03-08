@@ -177,7 +177,7 @@ export function HeroSection() {
           <div className="hero-photo-pos" style={{
             position: "absolute",
             left: "-40px",
-            top: "-30px",
+            top: "-50px",
             zIndex: 1,
             opacity: 0.85,
           }}>
@@ -191,7 +191,7 @@ export function HeroSection() {
           </div>
 
           {/* Text content — on top */}
-          <div style={{ position: "relative", zIndex: 2, paddingLeft: "140px" }} className="hero-text-content">
+          <div style={{ position: "relative", zIndex: 2, paddingLeft: "180px" }} className="hero-text-content">
             {personal.available && (
               <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 14px", borderRadius: "100px", border: "1px solid rgba(0,194,255,0.25)", background: "rgba(0,194,255,0.06)", marginBottom: "32px" }}>
                 <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10B981", boxShadow: "0 0 8px #10B981", animation: "pulse 2s ease-in-out infinite" }} />

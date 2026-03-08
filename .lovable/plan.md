@@ -1,10 +1,24 @@
 
 
-## Ajuste de Posicionamento do Hero
+## Problem
+The `<a download="...">` approach doesn't work reliably across all browsers and devices — especially on mobile and within iframe-based previews. The file either doesn't download or opens incorrectly.
 
-### Mudanças em `HeroSection.tsx`
+## Solution
+Create a helper function that uses `fetch()` + `Blob` + programmatic click to force a real download. This is the most reliable cross-platform approach.
 
-**1. Subir a imagem** — A foto precisa subir para que a base do círculo alinhe com "Rodrigues Pessoa". Atualmente `top: -30px`. Mudar para `top: -50px` para elevar.
+### Changes
 
-**2. Empurrar conteúdo para direita/centro** — Aumentar o `paddingLeft` do `.hero-text-content` de `140px` para `180px`, dando mais respiro à esquerda onde a foto aparece. Também considerar adicionar um leve `padding-left` ou `margin-left` no container principal para centralizar mais o bloco.
+**1. Create `src/app/utils/downloadFile.ts`**
+A utility function that:
+- Fetches `/Vilcimar_Portfolio.pdf` as a blob
+- Creates a temporary object URL
+- Programmatically clicks a hidden `<a>` element with the `download` attribute
+- Cleans up the object URL after download
 
+**2. Update `HeroSection.tsx`**
+- Replace the `<a href download>` with a `<button>` that calls the download utility on click
+
+**3. Update `ContactSection.tsx`**
+- Same change as HeroSection — use the download utility instead of native `<a download>`
+
+This approach works on desktop, mobile (iOS Safari, Android Chrome), and inside iframe previews.
