@@ -3,12 +3,12 @@ import { Linkedin, Mail, MapPin, ArrowUpRight, Download, Loader2 } from "lucide-
 import { useSiteData } from "../context/DataContext";
 import { generatePDF } from "../utils/generatePDF";
 
-function DownloadButton() {
+function DownloadButton({ data }: { data: ReturnType<typeof useSiteData>["data"] }) {
   const [generating, setGenerating] = useState(false);
   const handleDownload = async () => {
     setGenerating(true);
-    try { await generatePDF(); } catch (e) { console.error(e); }
-    setGenerating(false);
+    try { await generatePDF(data); } catch (e) { console.error(e); }
+    finally { setGenerating(false); }
   };
   return (
     <button
@@ -89,7 +89,7 @@ export function ContactSection() {
           >
             <Linkedin size={18} /> Conectar no LinkedIn <ArrowUpRight size={16} />
           </a>
-          <DownloadButton />
+          <DownloadButton data={data} />
         </div>
       </div>
 

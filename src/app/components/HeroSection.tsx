@@ -68,8 +68,8 @@ export function HeroSection() {
 
   const handleDownload = async () => {
     setGenerating(true);
-    try { await generatePDF(); } catch (e) { console.error(e); }
-    setGenerating(false);
+    try { await generatePDF(data); } catch (e) { console.error(e); }
+    finally { setGenerating(false); }
   };
   const firstLetter = personal.firstName.charAt(0);
   const restFirst = personal.firstName.slice(1);

@@ -6,11 +6,8 @@ import { TechStackSection } from "../components/TechStackSection";
 import { ProjectsSection } from "../components/ProjectsSection";
 import { PhilosophySection } from "../components/PhilosophySection";
 import { ContactSection } from "../components/ContactSection";
-import { PortfolioPDF } from "../components/PortfolioPDF";
-import { useSiteData } from "../context/DataContext";
 
 export function LandingPage() {
-  const { data } = useSiteData();
   return (
     <div
       style={{
@@ -37,7 +34,7 @@ export function LandingPage() {
       <ProjectsSection />
       <PhilosophySection />
       <ContactSection />
-      <PortfolioPDF data={data} />
+      
     </div>
   );
 }
