@@ -37,6 +37,7 @@ export function LandingPage() {
       <ProjectsSection />
       <PhilosophySection />
       <ContactSection />
+      <PortfolioPDF data={data} />
     </div>
   );
 }
