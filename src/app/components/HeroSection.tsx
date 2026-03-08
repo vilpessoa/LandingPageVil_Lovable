@@ -65,7 +65,7 @@ export function HeroSection() {
   const { personal } = data;
 
   const handleDownload = () => {
-    window.print();
+    downloadFile("/Vilcimar_Portfolio.pdf", "Vilcimar_Portfolio.pdf");
   };
   const firstLetter = personal.firstName.charAt(0);
   const restFirst = personal.firstName.slice(1);

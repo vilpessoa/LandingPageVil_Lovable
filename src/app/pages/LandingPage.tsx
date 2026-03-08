@@ -36,9 +36,6 @@ export function LandingPage() {
         <PhilosophySection />
         <ContactSection />
       </div>
-      <div className="print-content" style={{ display: "none" }}>
-        <PrintPage embedded />
-      </div>
     </div>
   );
 }
