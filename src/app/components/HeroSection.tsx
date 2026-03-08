@@ -168,7 +168,7 @@ export function HeroSection() {
       <div style={{ position: "absolute", top: "20%", right: "15%", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, rgba(0,194,255,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
       <div style={{ position: "absolute", bottom: "10%", left: "5%", width: "300px", height: "300px", borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "120px 24px 80px", paddingLeft: "calc(50vw - 480px)", position: "relative", zIndex: 1, width: "100%" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "120px 24px 80px", position: "relative", zIndex: 1, width: "100%" }}>
 
         {/* Content container with photo positioned behind name */}
         <div style={{ position: "relative" }}>
@@ -191,7 +191,7 @@ export function HeroSection() {
           </div>
 
           {/* Text content — on top */}
-          <div style={{ position: "relative", zIndex: 2, paddingLeft: "180px" }} className="hero-text-content">
+          <div style={{ position: "relative", zIndex: 2 }} className="hero-text-content">
             {personal.available && (
               <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 14px", borderRadius: "100px", border: "1px solid rgba(0,194,255,0.25)", background: "rgba(0,194,255,0.06)", marginBottom: "32px" }}>
                 <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10B981", boxShadow: "0 0 8px #10B981", animation: "pulse 2s ease-in-out infinite" }} />
@@ -257,6 +257,29 @@ export function HeroSection() {
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes heroFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @media (min-width: 1025px) {
+          .hero-text-content {
+            padding-left: 180px !important;
+          }
+        }
+        @media (max-width: 1024px) and (min-width: 769px) {
+          .hero-photo-pos {
+            position: relative !important;
+            left: auto !important;
+            top: auto !important;
+            display: flex !important;
+            justify-content: center !important;
+            margin-bottom: 24px !important;
+            opacity: 0.8 !important;
+          }
+          .hero-profile-photo {
+            width: 180px !important;
+            height: 180px !important;
+          }
+          .hero-text-content {
+            padding-left: 0 !important;
+          }
+        }
         @media (max-width: 768px) {
           .hero-photo-pos {
             position: relative !important;
@@ -273,6 +296,10 @@ export function HeroSection() {
           }
           .hero-text-content {
             padding-left: 0 !important;
+            text-align: center !important;
+          }
+          .hero-text-content > div:last-of-type {
+            justify-content: center !important;
           }
         }
       `}</style>
