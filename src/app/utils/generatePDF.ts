@@ -5,7 +5,7 @@ const PX_PER_MM = 794 / 210; // 794px = 210mm (A4 width)
 const PAGE_HEIGHT_MM = 297;
 const PAGE_WIDTH_MM = 210;
 
-export async function generatePDF(): Promise<void> {
+export async function generatePDF(fileName?: string): Promise<void> {
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";
   iframe.style.left = "-9999px";
