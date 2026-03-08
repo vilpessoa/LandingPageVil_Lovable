@@ -31,10 +31,28 @@ export async function generatePDF(): Promise<void> {
     const canvas = await html2canvas(page, {
       scale: 2,
       useCORS: true,
-      backgroundColor: null,
+      backgroundColor: "#0F172A",
       width: 595,
       height: 842,
       logging: false,
+      onclone: (clonedDoc) => {
+        // Remove all stylesheets that contain oklch (Tailwind v4) 
+        // which html2canvas cannot parse
+        const sheets = clonedDoc.querySelectorAll('style, link[rel="stylesheet"]');
+        sheets.forEach((sheet) => {
+          if (sheet instanceof HTMLStyleElement) {
+            const text = sheet.textContent || "";
+            if (text.includes("oklch") || text.includes("@tailwind") || text.includes("tailwindcss")) {
+              sheet.remove();
+            }
+          } else if (sheet instanceof HTMLLinkElement) {
+            const href = sheet.href || "";
+            if (href.includes("tailwind") || href.includes("index.css")) {
+              sheet.remove();
+            }
+          }
+        });
+      },
     });
 
     const imgData = canvas.toDataURL("image/png");
