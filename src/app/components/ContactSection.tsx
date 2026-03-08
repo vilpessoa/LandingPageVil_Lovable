@@ -97,7 +97,7 @@ export function ContactSection() {
           >
             <Linkedin size={18} /> Conectar no LinkedIn <ArrowUpRight size={16} />
           </a>
-          <DownloadButton />
+          <DownloadButton fileName={personal.cvUrl} />
         </div>
       </div>
 
