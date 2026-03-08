@@ -176,8 +176,8 @@ export function HeroSection() {
           {/* Profile photo — positioned behind the name area */}
           <div className="hero-photo-pos" style={{
             position: "absolute",
-            left: "-40px",
-            top: "-50px",
+            left: "-20px",
+            top: "-70px",
             zIndex: 1,
             opacity: 0.85,
           }}>
