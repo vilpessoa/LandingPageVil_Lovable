@@ -96,7 +96,8 @@ export async function generatePDF(fileName?: string): Promise<void> {
       pdf.rect(0, currentYMM, PAGE_WIDTH_MM, PAGE_HEIGHT_MM - currentYMM, "F");
     }
 
-    pdf.save("Vilcimar_Portfolio.pdf");
+    const safeName = (fileName || "Portfolio").replace(/\.pdf$/i, "");
+    pdf.save(`${safeName}.pdf`);
   } finally {
     document.body.removeChild(iframe);
   }
