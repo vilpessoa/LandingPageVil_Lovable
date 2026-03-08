@@ -177,7 +177,7 @@ export function HeroSection() {
           <div className="hero-photo-pos" style={{
             position: "absolute",
             left: "-40px",
-            top: "-30px",
+            top: "-50px",
             zIndex: 1,
             opacity: 0.85,
           }}>
