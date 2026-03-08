@@ -1,7 +1,5 @@
-import { useState } from "react";
-import { Download, Linkedin, ChevronDown, Loader2 } from "lucide-react";
+import { Download, Linkedin, ChevronDown } from "lucide-react";
 import { useSiteData } from "../context/DataContext";
-import { generatePDF } from "../utils/generatePDF";
 
 function AnimatedGridLines() {
   return (

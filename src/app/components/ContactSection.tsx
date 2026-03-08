@@ -1,25 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { Linkedin, Mail, MapPin, ArrowUpRight, Download, Loader2 } from "lucide-react";
+import { Linkedin, Mail, MapPin, ArrowUpRight, Download } from "lucide-react";
 import { useSiteData } from "../context/DataContext";
-import { generatePDF } from "../utils/generatePDF";
 
-function DownloadButton({ data }: { data: ReturnType<typeof useSiteData>["data"] }) {
-  const [generating, setGenerating] = useState(false);
-  const handleDownload = async () => {
-    setGenerating(true);
-    try { await generatePDF(data); } catch (e) { console.error(e); }
-    finally { setGenerating(false); }
-  };
+function DownloadButton() {
   return (
     <button
-      onClick={handleDownload}
-      disabled={generating}
-      style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "16px 36px", borderRadius: "8px", background: "transparent", color: generating ? "#00C2FF" : "#F9FAFB", fontFamily: "'Inter', sans-serif", fontSize: "15px", fontWeight: 600, border: "1px solid rgba(255,255,255,0.12)", cursor: generating ? "wait" : "pointer", textDecoration: "none", transition: "all 0.25s ease" }}
-      onMouseEnter={(e) => { if (!generating) { e.currentTarget.style.borderColor = "rgba(0,194,255,0.3)"; e.currentTarget.style.color = "#00C2FF"; e.currentTarget.style.transform = "translateY(-2px)"; } }}
-      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; e.currentTarget.style.color = generating ? "#00C2FF" : "#F9FAFB"; e.currentTarget.style.transform = "translateY(0)"; }}
+      onClick={() => window.open("/print", "_blank")}
+      style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "16px 36px", borderRadius: "8px", background: "transparent", color: "#F9FAFB", fontFamily: "'Inter', sans-serif", fontSize: "15px", fontWeight: 600, border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer", textDecoration: "none", transition: "all 0.25s ease" }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(0,194,255,0.3)"; e.currentTarget.style.color = "#00C2FF"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; e.currentTarget.style.color = "#F9FAFB"; e.currentTarget.style.transform = "translateY(0)"; }}
     >
-      {generating ? <Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} /> : <Download size={18} />}
-      {generating ? "Gerando..." : "Download"}
+      <Download size={18} />
+      Download
     </button>
   );
 }
