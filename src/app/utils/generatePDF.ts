@@ -5,7 +5,7 @@ const PX_PER_MM = 794 / 210; // 794px = 210mm (A4 width)
 const PAGE_HEIGHT_MM = 297;
 const PAGE_WIDTH_MM = 210;
 
-export async function generatePDF(): Promise<void> {
+export async function generatePDF(fileName?: string): Promise<void> {
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";
   iframe.style.left = "-9999px";
@@ -96,7 +96,8 @@ export async function generatePDF(): Promise<void> {
       pdf.rect(0, currentYMM, PAGE_WIDTH_MM, PAGE_HEIGHT_MM - currentYMM, "F");
     }
 
-    pdf.save("Vilcimar_Portfolio.pdf");
+    const safeName = (fileName || "Portfolio").replace(/\.pdf$/i, "");
+    pdf.save(`${safeName}.pdf`);
   } finally {
     document.body.removeChild(iframe);
   }

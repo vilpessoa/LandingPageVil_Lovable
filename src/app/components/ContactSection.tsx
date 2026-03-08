@@ -3,14 +3,14 @@ import { Linkedin, Mail, MapPin, ArrowUpRight, Download, Loader2 } from "lucide-
 import { useSiteData } from "../context/DataContext";
 import { generatePDF } from "../utils/generatePDF";
 
-function DownloadButton() {
+function DownloadButton({ fileName }: { fileName?: string }) {
   const [generating, setGenerating] = useState(false);
 
   const handleDownload = async () => {
     if (generating) return;
     setGenerating(true);
     try {
-      await generatePDF();
+      await generatePDF(fileName);
     } catch (err) {
       console.error("PDF generation failed:", err);
     } finally {
@@ -97,7 +97,7 @@ export function ContactSection() {
           >
             <Linkedin size={18} /> Conectar no LinkedIn <ArrowUpRight size={16} />
           </a>
-          <DownloadButton />
+          <DownloadButton fileName={personal.cvUrl} />
         </div>
       </div>
 

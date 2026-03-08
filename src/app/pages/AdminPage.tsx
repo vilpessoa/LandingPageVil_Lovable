@@ -318,7 +318,7 @@ function PersonalEditor() {
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
         <Field label="Localização"><input style={S.input} value={form.location} onChange={(e) => set("location", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
-        <Field label="URL do CV (link de download)"><input style={S.input} value={form.cvUrl} onChange={(e) => set("cvUrl", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
+        <Field label="Nome do arquivo PDF ao baixar"><input style={S.input} value={form.cvUrl} onChange={(e) => set("cvUrl", e.target.value)} placeholder="Ex: Vilcimar_Portfolio.pdf" onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
       </div>
       <Field label="Disponível para projetos">
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
