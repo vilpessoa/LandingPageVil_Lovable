@@ -6,6 +6,7 @@ import {
   RotateCcw, Lock, AlertTriangle, CheckCircle2,
 } from "lucide-react";
 import { useSiteData, MetricItem, TechCategory, Project, Principle } from "../context/DataContext";
+import { supabase } from "@/integrations/supabase/client";
 
 // ─── Shared UI ────────────────────────────────────────────────────────────────
 
