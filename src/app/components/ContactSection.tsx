@@ -101,7 +101,7 @@ export function ContactSection() {
         </div>
       </div>
 
-      <div style={{ maxWidth: "900px", margin: "60px auto 0", paddingTop: "32px", borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
+      <div style={{ maxWidth: "900px", margin: "60px auto 0", paddingTop: "32px", borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: "8px" }}>
         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "#9CA3AF" }}>
           © {new Date().getFullYear()} <span style={{ color: "#00C2FF" }}>{personal.firstName} {personal.lastName}</span> · {personal.title}
         </p>
