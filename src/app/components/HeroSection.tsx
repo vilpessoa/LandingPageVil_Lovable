@@ -257,6 +257,29 @@ export function HeroSection() {
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes heroFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @media (min-width: 1025px) {
+          .hero-text-content {
+            padding-left: 180px !important;
+          }
+        }
+        @media (max-width: 1024px) and (min-width: 769px) {
+          .hero-photo-pos {
+            position: relative !important;
+            left: auto !important;
+            top: auto !important;
+            display: flex !important;
+            justify-content: center !important;
+            margin-bottom: 24px !important;
+            opacity: 0.8 !important;
+          }
+          .hero-profile-photo {
+            width: 180px !important;
+            height: 180px !important;
+          }
+          .hero-text-content {
+            padding-left: 0 !important;
+          }
+        }
         @media (max-width: 768px) {
           .hero-photo-pos {
             position: relative !important;
@@ -273,6 +296,10 @@ export function HeroSection() {
           }
           .hero-text-content {
             padding-left: 0 !important;
+            text-align: center !important;
+          }
+          .hero-text-content > div:last-of-type {
+            justify-content: center !important;
           }
         }
       `}</style>
