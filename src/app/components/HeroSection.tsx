@@ -1,7 +1,5 @@
-import { useState } from "react";
-import { Download, Linkedin, ChevronDown, Loader2 } from "lucide-react";
+import { Download, Linkedin, ChevronDown } from "lucide-react";
 import { useSiteData } from "../context/DataContext";
-import { generatePDF } from "../utils/generatePDF";
 
 function AnimatedGridLines() {
   return (
@@ -64,12 +62,9 @@ function LineChartDecor() {
 export function HeroSection() {
   const { data } = useSiteData();
   const { personal } = data;
-  const [generating, setGenerating] = useState(false);
 
-  const handleDownload = async () => {
-    setGenerating(true);
-    try { await generatePDF(data); } catch (e) { console.error(e); }
-    finally { setGenerating(false); }
+  const handleDownload = () => {
+    window.open("/print", "_blank");
   };
   const firstLetter = personal.firstName.charAt(0);
   const restFirst = personal.firstName.slice(1);
@@ -118,13 +113,12 @@ export function HeroSection() {
         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
           <button
             onClick={handleDownload}
-            disabled={generating}
-            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "14px 28px", borderRadius: "8px", background: generating ? "#0099CC" : "#00C2FF", color: "#0F172A", fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 700, border: "none", cursor: generating ? "wait" : "pointer", textDecoration: "none", transition: "all 0.25s ease", opacity: generating ? 0.8 : 1 }}
-            onMouseEnter={(e) => { if (!generating) { e.currentTarget.style.background = "#33CEFF"; e.currentTarget.style.boxShadow = "0 0 30px rgba(0,194,255,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; } }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = generating ? "#0099CC" : "#00C2FF"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}
+            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "14px 28px", borderRadius: "8px", background: "#00C2FF", color: "#0F172A", fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 700, border: "none", cursor: "pointer", textDecoration: "none", transition: "all 0.25s ease" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#33CEFF"; e.currentTarget.style.boxShadow = "0 0 30px rgba(0,194,255,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#00C2FF"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}
           >
-            {generating ? <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /> : <Download size={16} />}
-            {generating ? "Gerando..." : "Download"}
+            <Download size={16} />
+            Download
           </button>
           <a
             href={personal.linkedinUrl}
