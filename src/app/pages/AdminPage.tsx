@@ -6,6 +6,7 @@ import {
   RotateCcw, Lock, AlertTriangle, CheckCircle2,
 } from "lucide-react";
 import { useSiteData, MetricItem, TechCategory, Project, Principle } from "../context/DataContext";
+import { IconPicker } from "../components/IconPicker";
 import { supabase } from "@/integrations/supabase/client";
 
 // ─── Shared UI ────────────────────────────────────────────────────────────────
@@ -463,9 +464,9 @@ function TechEditor() {
         <div key={cat.id} style={{ ...S.card, borderColor: `${cat.color}25` }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
             <div style={{ display: "flex", gap: "12px", flex: 1 }}>
-              <div style={{ width: "60px" }}>
+              <div style={{ width: "80px" }}>
                 <label style={S.label}>Ícone</label>
-                <input style={{ ...S.input, textAlign: "center", fontSize: "22px" }} value={cat.icon} onChange={(e) => updateCat(cat.id, "icon", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} />
+                <IconPicker value={cat.icon} onChange={(val) => updateCat(cat.id, "icon", val)} color={cat.color} />
               </div>
               <div style={{ flex: 1 }}>
                 <label style={S.label}>Título da Categoria</label>
