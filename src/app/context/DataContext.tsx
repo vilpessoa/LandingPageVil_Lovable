@@ -311,8 +311,6 @@ const DataContext = createContext<DataContextType | null>(null);
 
 const STORAGE_KEY = "vil_portfolio_data";
 
-const API_ENDPOINT = "/api/site-data";
-
 function mergeWithDefaults(input: Partial<SiteData> | null | undefined): SiteData {
   const parsed = input ?? {};
   return {
