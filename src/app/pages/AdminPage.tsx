@@ -532,6 +532,8 @@ function ProjectsEditor() {
   const { saved, trigger } = useSaved();
   const ICONS = ["TrendingUp", "Cpu", "Target", "BarChart3", "Zap", "Database", "Star", "Award"];
   const COLORS = ["#00C2FF", "#7C3AED", "#10B981", "#F59E0B", "#EF4444", "#EC4899"];
+  const fileRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const [uploading, setUploading] = useState<string | null>(null);
 
   const updateProject = (id: string, key: keyof Project, val: any) =>
     setProjects((prev) => prev.map((p) => (p.id === id ? { ...p, [key]: val } : p)));
@@ -550,9 +552,37 @@ function ProjectsEditor() {
       id: `p${Date.now()}`, tag: "Stack", tagColor: "#00C2FF", title: "Novo Projeto",
       subtitle: "Subtítulo", problem: "Descreva o problema...", solution: "Descreva a solução...",
       result: "Descreva o resultado...", metrics: [{ value: "0%", label: "Impacto" }], color: "#00C2FF", icon: "Target",
+      imageUrl: "", projectUrl: "",
     }]);
 
   const removeProject = (id: string) => setProjects((prev) => prev.filter((p) => p.id !== id));
+
+  const handleImageUpload = async (projectId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(projectId);
+    try {
+      const ext = file.name.split(".").pop();
+      const fileName = `projects/${projectId}.${ext}`;
+      const { error } = await supabase.storage.from("profile").upload(fileName, file, { upsert: true });
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from("profile").getPublicUrl(fileName);
+      const url = `${urlData.publicUrl}?t=${Date.now()}`;
+      updateProject(projectId, "imageUrl", url);
+    } catch (err) {
+      console.error("Upload failed:", err);
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  const removeImage = async (projectId: string) => {
+    try {
+      const extensions = ["png", "jpg", "jpeg", "webp"];
+      await supabase.storage.from("profile").remove(extensions.map((ext) => `projects/${projectId}.${ext}`));
+    } catch {}
+    updateProject(projectId, "imageUrl", "");
+  };
 
   return (
     <div>
@@ -602,9 +632,53 @@ function ProjectsEditor() {
               <button onClick={() => removeMetric(proj.id, idx)} style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "6px", color: "#EF4444", cursor: "pointer", padding: "0 10px" }}><Trash2 size={12} /></button>
             </div>
           ))}
-          <button onClick={() => addMetric(proj.id)} style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 14px", borderRadius: "6px", background: `${proj.color}10`, border: `1px solid ${proj.color}25`, color: proj.color, fontFamily: "'Inter', sans-serif", fontSize: "13px", cursor: "pointer", marginTop: "4px" }}>
+          <button onClick={() => addMetric(proj.id)} style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 14px", borderRadius: "6px", background: `${proj.color}10`, border: `1px solid ${proj.color}25`, color: proj.color, fontFamily: "'Inter', sans-serif", fontSize: "13px", cursor: "pointer", marginTop: "4px", marginBottom: "16px" }}>
             <Plus size={13} /> Adicionar métrica
           </button>
+
+          {/* Project Link */}
+          <Field label="Link do projeto (URL externa)">
+            <input style={S.input} value={proj.projectUrl || ""} onChange={(e) => updateProject(proj.id, "projectUrl", e.target.value)} placeholder="https://app.powerbi.com/..." onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} />
+          </Field>
+
+          {/* Project Image Upload */}
+          <Field label="Imagem do projeto">
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+              {proj.imageUrl ? (
+                <div style={{ width: "160px", height: "90px", borderRadius: "8px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", flexShrink: 0 }}>
+                  <img src={proj.imageUrl} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+              ) : (
+                <div style={{ width: "160px", height: "90px", borderRadius: "8px", border: "1px dashed rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#6B7280", fontSize: "12px", flexShrink: 0 }}>
+                  Sem imagem
+                </div>
+              )}
+              <div style={{ display: "flex", gap: "8px" }}>
+                <input
+                  ref={(el) => { fileRefs.current[proj.id] = el; }}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(proj.id, e)}
+                  style={{ display: "none" }}
+                />
+                <button
+                  onClick={() => fileRefs.current[proj.id]?.click()}
+                  disabled={uploading === proj.id}
+                  style={{ padding: "8px 16px", borderRadius: "8px", background: "rgba(0,194,255,0.1)", border: "1px solid rgba(0,194,255,0.25)", color: "#00C2FF", fontFamily: "'Inter', sans-serif", fontSize: "13px", cursor: "pointer" }}
+                >
+                  {uploading === proj.id ? "Enviando..." : "Upload"}
+                </button>
+                {proj.imageUrl && (
+                  <button
+                    onClick={() => removeImage(proj.id)}
+                    style={{ padding: "8px 16px", borderRadius: "8px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#EF4444", fontFamily: "'Inter', sans-serif", fontSize: "13px", cursor: "pointer" }}
+                  >
+                    Remover
+                  </button>
+                )}
+              </div>
+            </div>
+          </Field>
         </div>
       ))}
       <div style={{ display: "flex", gap: "12px" }}>

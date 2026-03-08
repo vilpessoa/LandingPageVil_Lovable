@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { TrendingUp, Cpu, Target, BarChart3, Zap, Database, Star, Award } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { TrendingUp, Cpu, Target, BarChart3, Zap, Database, Star, Award, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { useSiteData } from "../context/DataContext";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -13,35 +13,21 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   Award: <Award size={20} />,
 };
 
-function ProjectCard({ project, index }: { project: any; index: number }) {
-  const [visible, setVisible] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
-      { threshold: 0.1 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
+function ProjectCard({ project }: { project: any }) {
   const icon = ICON_MAP[project.icon] || <Target size={20} />;
 
   return (
     <div
-      ref={ref}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
         background: "linear-gradient(135deg, rgba(17,24,39,0.95) 0%, rgba(15,23,42,0.98) 100%)",
-        border: `1px solid ${hovered ? project.color + "35" : "rgba(255,255,255,0.06)"}`,
-        borderRadius: "16px", padding: "36px",
-        opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(40px)",
-        transition: `all 0.65s ease ${index * 150}ms`,
-        boxShadow: hovered ? `0 0 40px ${project.color}10, 0 20px 40px rgba(0,0,0,0.3)` : "0 4px 20px rgba(0,0,0,0.2)",
-        position: "relative", overflow: "hidden",
+        border: `1px solid rgba(255,255,255,0.06)`,
+        borderRadius: "16px",
+        padding: "36px",
+        position: "relative",
+        overflow: "hidden",
+        maxWidth: "700px",
+        margin: "0 auto",
+        width: "100%",
       }}
     >
       <div style={{ position: "absolute", top: 0, right: 0, width: "200px", height: "200px", background: `radial-gradient(circle at top right, ${project.color}08 0%, transparent 70%)`, pointerEvents: "none" }} />
@@ -87,16 +73,92 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
           </div>
         ))}
       </div>
+
+      {/* Project Image */}
+      {project.imageUrl && (
+        <div style={{ marginTop: "20px", borderRadius: "10px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.06)" }}>
+          <img
+            src={project.imageUrl}
+            alt={project.title}
+            style={{ width: "100%", height: "200px", objectFit: "cover", display: "block" }}
+          />
+        </div>
+      )}
+
+      {/* Project Link */}
+      {project.projectUrl && (
+        <div style={{ marginTop: "16px", display: "flex", justifyContent: "center" }}>
+          <a
+            href={project.projectUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "10px 24px",
+              borderRadius: "8px",
+              background: `${project.color}15`,
+              border: `1px solid ${project.color}30`,
+              color: project.color,
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "14px",
+              fontWeight: 600,
+              textDecoration: "none",
+              transition: "all 0.3s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = `${project.color}25`;
+              e.currentTarget.style.boxShadow = `0 0 20px ${project.color}15`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = `${project.color}15`;
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          >
+            <ExternalLink size={16} />
+            Acesse o projeto
+          </a>
+        </div>
+      )}
     </div>
   );
 }
 
 export function ProjectsSection() {
   const { data } = useSiteData();
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const total = data.projects.length;
+
+  const goTo = useCallback((idx: number) => {
+    setCurrent(((idx % total) + total) % total);
+  }, [total]);
+
+  const next = useCallback(() => goTo(current + 1), [current, goTo]);
+  const prev = useCallback(() => goTo(current - 1), [current, goTo]);
+
+  // Autoplay
+  useEffect(() => {
+    if (paused || total <= 1) return;
+    timerRef.current = setInterval(() => {
+      setCurrent((c) => (c + 1) % total);
+    }, 5000);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [paused, total]);
+
+  if (total === 0) return null;
 
   return (
-    <section id="projects" style={{ background: "#111827", padding: "100px 24px", position: "relative" }}>
+    <section
+      id="projects"
+      style={{ background: "#111827", padding: "100px 24px", position: "relative" }}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: "200px", height: "1px", background: "linear-gradient(90deg, transparent, rgba(124,58,237,0.4), transparent)" }} />
+
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: "64px" }}>
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "#7C3AED", letterSpacing: "0.15em", textTransform: "uppercase" }}>// casos de sucesso</span>
@@ -105,8 +167,72 @@ export function ProjectsSection() {
             Soluções entregues com foco em impacto real e resultados mensuráveis.
           </p>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "28px" }}>
-          {data.projects.map((project, i) => <ProjectCard key={project.id} project={project} index={i} />)}
+
+        {/* Carousel */}
+        <div style={{ position: "relative" }}>
+          {/* Navigation arrows */}
+          {total > 1 && (
+            <>
+              <button
+                onClick={prev}
+                aria-label="Projeto anterior"
+                style={{
+                  position: "absolute", top: "50%", left: "-16px", transform: "translateY(-50%)",
+                  zIndex: 10, width: "40px", height: "40px", borderRadius: "50%",
+                  background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                  color: "#F9FAFB", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button
+                onClick={next}
+                aria-label="Próximo projeto"
+                style={{
+                  position: "absolute", top: "50%", right: "-16px", transform: "translateY(-50%)",
+                  zIndex: 10, width: "40px", height: "40px", borderRadius: "50%",
+                  background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                  color: "#F9FAFB", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+              >
+                <ChevronRight size={20} />
+              </button>
+            </>
+          )}
+
+          {/* Slide */}
+          <div style={{ overflow: "hidden", padding: "0 8px" }}>
+            <ProjectCard project={data.projects[current]} />
+          </div>
+
+          {/* Dot indicators */}
+          {total > 1 && (
+            <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "28px" }}>
+              {data.projects.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => goTo(i)}
+                  aria-label={`Ir para projeto ${i + 1}`}
+                  style={{
+                    width: current === i ? "24px" : "8px",
+                    height: "8px",
+                    borderRadius: "4px",
+                    background: current === i ? data.projects[i].color : "rgba(255,255,255,0.15)",
+                    border: "none",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    padding: 0,
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
