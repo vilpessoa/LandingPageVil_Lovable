@@ -64,7 +64,7 @@ export function HeroSection() {
   const { personal } = data;
 
   const handleDownload = () => {
-    window.open("/print", "_blank");
+    window.print();
   };
   const firstLetter = personal.firstName.charAt(0);
   const restFirst = personal.firstName.slice(1);
