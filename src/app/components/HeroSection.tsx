@@ -1,6 +1,7 @@
-import { Download, Linkedin, ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { Download, Linkedin, ChevronDown, Loader2 } from "lucide-react";
 import { useSiteData } from "../context/DataContext";
-import { downloadFile } from "../utils/downloadFile";
+import { generatePDF } from "../utils/generatePDF";
 
 function AnimatedGridLines() {
   return (
@@ -63,10 +64,20 @@ function LineChartDecor() {
 export function HeroSection() {
   const { data } = useSiteData();
   const { personal } = data;
+  const [generating, setGenerating] = useState(false);
 
-  const handleDownload = () => {
-    downloadFile("/Vilcimar_Portfolio.pdf", "Vilcimar_Portfolio.pdf");
+  const handleDownload = async () => {
+    if (generating) return;
+    setGenerating(true);
+    try {
+      await generatePDF();
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+    } finally {
+      setGenerating(false);
+    }
   };
+
   const firstLetter = personal.firstName.charAt(0);
   const restFirst = personal.firstName.slice(1);
 
@@ -78,7 +89,6 @@ export function HeroSection() {
       <div style={{ position: "absolute", bottom: "10%", left: "5%", width: "300px", height: "300px", borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
 
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "120px 24px 80px", position: "relative", zIndex: 1 }}>
-        {/* Badge */}
         {personal.available && (
           <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 14px", borderRadius: "100px", border: "1px solid rgba(0,194,255,0.25)", background: "rgba(0,194,255,0.06)", marginBottom: "32px" }}>
             <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10B981", boxShadow: "0 0 8px #10B981", animation: "pulse 2s ease-in-out infinite" }} />
@@ -88,7 +98,6 @@ export function HeroSection() {
           </div>
         )}
 
-        {/* Name */}
         <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "clamp(42px, 6vw, 72px)", fontWeight: 700, color: "#F9FAFB", lineHeight: 1.05, letterSpacing: "-2px", marginBottom: "12px" }}>
           <span style={{ color: "#00C2FF" }}>{firstLetter}</span>{restFirst}
           <br />
@@ -97,7 +106,6 @@ export function HeroSection() {
           </span>
         </h1>
 
-        {/* Title */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
           <div style={{ width: "32px", height: "2px", background: "#00C2FF" }} />
           <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "clamp(16px, 2vw, 22px)", fontWeight: 500, color: "#9CA3AF", letterSpacing: "0.02em" }}>
@@ -105,21 +113,20 @@ export function HeroSection() {
           </span>
         </div>
 
-        {/* Headline */}
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "clamp(15px, 1.8vw, 18px)", color: "#9CA3AF", maxWidth: "520px", lineHeight: 1.7, marginBottom: "48px" }}>
           {personal.subtitle}. {personal.headline}
         </p>
 
-        {/* CTAs */}
         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
           <button
             onClick={handleDownload}
-            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "14px 28px", borderRadius: "8px", background: "#00C2FF", color: "#0F172A", fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 700, border: "none", cursor: "pointer", textDecoration: "none", transition: "all 0.25s ease" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#33CEFF"; e.currentTarget.style.boxShadow = "0 0 30px rgba(0,194,255,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "#00C2FF"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}
+            disabled={generating}
+            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "14px 28px", borderRadius: "8px", background: generating ? "#0099CC" : "#00C2FF", color: "#0F172A", fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 700, border: "none", cursor: generating ? "wait" : "pointer", textDecoration: "none", transition: "all 0.25s ease", opacity: generating ? 0.8 : 1 }}
+            onMouseEnter={(e) => { if (!generating) { e.currentTarget.style.background = "#33CEFF"; e.currentTarget.style.boxShadow = "0 0 30px rgba(0,194,255,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; } }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = generating ? "#0099CC" : "#00C2FF"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}
           >
-            <Download size={16} />
-            Download
+            {generating ? <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /> : <Download size={16} />}
+            {generating ? "Gerando..." : "Download"}
           </button>
           <a
             href={personal.linkedinUrl}
