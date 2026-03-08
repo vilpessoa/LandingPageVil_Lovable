@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSiteData } from "../context/DataContext";
+import { RenderIcon } from "./IconPicker";
 
 function TechChip({ name, color }: { name: string; color: string }) {
   const [hovered, setHovered] = useState(false);
