@@ -121,7 +121,7 @@ function ProfilePhoto({ photoUrl, initials, scale, offsetX, offsetY }: {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      animation: "heroFloat 4s ease-in-out infinite",
+      animation: "heroFloat 6s ease-in-out infinite",
       flexShrink: 0,
     }}>
       <span style={{
