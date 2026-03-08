@@ -90,7 +90,7 @@ export function TechStackSection() {
             >
               <div style={{ position: "absolute", top: 0, right: 0, width: "80px", height: "80px", background: `radial-gradient(circle at top right, ${cat.color}15 0%, transparent 70%)`, pointerEvents: "none" }} />
               <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
-                <div style={{ width: "44px", height: "44px", borderRadius: "10px", background: `${cat.color}15`, border: `1px solid ${cat.color}25`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>{cat.icon}</div>
+                <div style={{ width: "44px", height: "44px", borderRadius: "10px", background: `${cat.color}15`, border: `1px solid ${cat.color}25`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}><RenderIcon value={cat.icon} size={20} color={cat.color} /></div>
                 <div>
                   <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "17px", fontWeight: 700, color: "#F9FAFB", marginBottom: "2px" }}>{cat.title}</h3>
                   <div style={{ width: "24px", height: "2px", background: cat.color, borderRadius: "1px" }} />
