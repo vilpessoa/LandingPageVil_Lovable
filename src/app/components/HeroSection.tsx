@@ -76,7 +76,7 @@ function ProfilePhoto({ photoUrl, initials, scale, offsetX, offsetY }: {
         height: "220px",
         borderRadius: "50%",
         overflow: "hidden",
-        animation: "heroFloat 4s ease-in-out infinite",
+        animation: "heroFloat 6s ease-in-out infinite",
         flexShrink: 0,
       }}>
         <img
