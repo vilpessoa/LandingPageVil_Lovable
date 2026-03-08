@@ -81,7 +81,7 @@ export function ContactSection() {
           >
             <Linkedin size={18} /> Conectar no LinkedIn <ArrowUpRight size={16} />
           </a>
-          <DownloadButton data={data} />
+          <DownloadButton />
         </div>
       </div>
 
