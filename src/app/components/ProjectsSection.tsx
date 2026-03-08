@@ -63,7 +63,13 @@ function ProjectCard({ project }: { project: any }) {
         ))}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: `repeat(${project.metrics.length}, 1fr)`, gap: "12px", padding: "20px", background: "rgba(0,0,0,0.2)", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.04)" }}>
+      {project.imageUrl && (
+        <div style={{ marginTop: "20px", borderRadius: "10px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.06)" }}>
+          <img src={project.imageUrl} alt={project.title} style={{ width: "100%", height: "320px", objectFit: "cover", display: "block" }} />
+        </div>
+      )}
+
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${project.metrics.length}, 1fr)`, gap: "12px", padding: "20px", background: "rgba(0,0,0,0.2)", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.04)", marginTop: "20px" }}>
         {project.metrics.map((metric: any, i: number) => (
           <div key={i} style={{ textAlign: "center" }}>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "20px", fontWeight: 700, color: project.color, marginBottom: "4px" }}>{metric.value}</div>
@@ -71,12 +77,6 @@ function ProjectCard({ project }: { project: any }) {
           </div>
         ))}
       </div>
-
-      {project.imageUrl && (
-        <div style={{ marginTop: "20px", borderRadius: "10px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.06)" }}>
-          <img src={project.imageUrl} alt={project.title} style={{ width: "100%", height: "200px", objectFit: "cover", display: "block" }} />
-        </div>
-      )}
 
       {project.projectUrl && (
         <div style={{ marginTop: "16px", display: "flex", justifyContent: "center" }}>
