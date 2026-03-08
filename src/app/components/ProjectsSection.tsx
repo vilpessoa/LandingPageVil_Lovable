@@ -63,7 +63,7 @@ function ProjectCard({ project }: { project: any }) {
         ))}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: `repeat(${project.metrics.length}, 1fr)`, gap: "12px", padding: "20px", background: "rgba(0,0,0,0.2)", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.04)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${project.metrics.length}, 1fr)`, gap: "12px", padding: "14px 16px", background: "rgba(0,0,0,0.2)", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.04)" }}>
         {project.metrics.map((metric: any, i: number) => (
           <div key={i} style={{ textAlign: "center" }}>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "16px", fontWeight: 700, color: project.color, marginBottom: "2px" }}>{metric.value}</div>
