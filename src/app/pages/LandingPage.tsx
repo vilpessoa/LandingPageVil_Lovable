@@ -6,6 +6,7 @@ import { TechStackSection } from "../components/TechStackSection";
 import { ProjectsSection } from "../components/ProjectsSection";
 import { PhilosophySection } from "../components/PhilosophySection";
 import { ContactSection } from "../components/ContactSection";
+import { PrintPage } from "./PrintPage";
 
 export function LandingPage() {
   return (
@@ -26,15 +27,19 @@ export function LandingPage() {
         ::-webkit-scrollbar-thumb:hover { background: rgba(0,194,255,0.5); }
         ::selection { background: rgba(0,194,255,0.25); color: #F9FAFB; }
       `}</style>
-      <Navbar />
-      <HeroSection />
-      <MetricsSection />
-      <AboutSection />
-      <TechStackSection />
-      <ProjectsSection />
-      <PhilosophySection />
-      <ContactSection />
-      
+      <div className="landing-content">
+        <Navbar />
+        <HeroSection />
+        <MetricsSection />
+        <AboutSection />
+        <TechStackSection />
+        <ProjectsSection />
+        <PhilosophySection />
+        <ContactSection />
+      </div>
+      <div className="print-content" style={{ display: "none" }}>
+        <PrintPage embedded />
+      </div>
     </div>
   );
 }
