@@ -1,18 +1,24 @@
 
 
-## Como funciona: Lovable Cloud → Supabase Externo
+## Problem
+The `<a download="...">` approach doesn't work reliably across all browsers and devices — especially on mobile and within iframe-based previews. The file either doesn't download or opens incorrectly.
 
-Ativar o **Lovable Cloud** não impede o uso de Supabase externo — pelo contrário, é um **pré-requisito**. Veja o fluxo:
+## Solution
+Create a helper function that uses `fetch()` + `Blob` + programmatic click to force a real download. This is the most reliable cross-platform approach.
 
-1. **Ativar Lovable Cloud** — isso habilita a infraestrutura necessária (edge functions, secrets, migrations) dentro do projeto Lovable.
+### Changes
 
-2. **Criar o projeto Supabase externo** — você cria um projeto em [supabase.com](https://supabase.com) com sua própria conta.
+**1. Create `src/app/utils/downloadFile.ts`**
+A utility function that:
+- Fetches `/Vilcimar_Portfolio.pdf` as a blob
+- Creates a temporary object URL
+- Programmatically clicks a hidden `<a>` element with the `download` attribute
+- Cleans up the object URL after download
 
-3. **Conectar o Supabase externo ao Lovable** — nas configurações do projeto, você conecta seu projeto Supabase externo. As credenciais (`SUPABASE_URL`, `SUPABASE_ANON_KEY`) ficam disponíveis automaticamente.
+**2. Update `HeroSection.tsx`**
+- Replace the `<a href download>` with a `<button>` that calls the download utility on click
 
-4. **Implementação** — eu crio a tabela `site_data` no seu Supabase e atualizo o `DataContext.tsx` para usar o client Supabase em vez do Express.
+**3. Update `ContactSection.tsx`**
+- Same change as HeroSection — use the download utility instead of native `<a download>`
 
-**Resumo**: Lovable Cloud é a camada que permite ao Lovable se comunicar com qualquer Supabase (inclusive externo). Sem ele ativado, não há como rodar migrations, edge functions ou gerenciar secrets.
-
-Quando você aceitar a ativação, o próximo passo será conectar seu projeto Supabase externo.
-
+This approach works on desktop, mobile (iOS Safari, Android Chrome), and inside iframe previews.
