@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface MetricItem {
   id: string;
@@ -310,8 +311,6 @@ const DataContext = createContext<DataContextType | null>(null);
 
 const STORAGE_KEY = "vil_portfolio_data";
 
-const API_ENDPOINT = "/api/site-data";
-
 function mergeWithDefaults(input: Partial<SiteData> | null | undefined): SiteData {
   const parsed = input ?? {};
   return {
@@ -348,15 +347,23 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     const loadRemote = async () => {
       try {
-        const response = await fetch(API_ENDPOINT);
-        if (!response.ok) return;
-        const remote = await response.json();
+        const { data: rows, error } = await supabase
+          .from("site_data")
+          .select("section, content");
+
+        if (error || !rows || rows.length === 0) return;
         if (!active) return;
+
+        const remote: Partial<SiteData> = {};
+        for (const row of rows) {
+          (remote as any)[row.section] = row.content;
+        }
+
         const merged = mergeWithDefaults(remote);
         setData(merged);
         saveData(merged);
       } catch {
-        // Optional endpoint: keep local cache when API is unavailable.
+        // Keep local cache when DB is unavailable.
       }
     };
 
@@ -366,23 +373,24 @@ export function DataProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const persistRemote = async (next: SiteData) => {
+  const persistSection = async (section: string, content: unknown) => {
     try {
-      await fetch(API_ENDPOINT, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(next),
-      });
+      await supabase
+        .from("site_data")
+        .upsert(
+          { section, content: content as any, updated_at: new Date().toISOString() },
+          { onConflict: "section" }
+        );
     } catch {
       // Local cache still preserves admin updates in this browser.
     }
   };
 
-  const update = (computeNext: (prev: SiteData) => SiteData) => {
+  const update = (sectionKey: keyof SiteData, value: any) => {
     setData((prev) => {
-      const next = computeNext(prev);
+      const next = { ...prev, [sectionKey]: value };
       saveData(next);
-      void persistRemote(next);
+      void persistSection(sectionKey, value);
       return next;
     });
   };
@@ -391,15 +399,22 @@ export function DataProvider({ children }: { children: ReactNode }) {
     <DataContext.Provider
       value={{
         data,
-        updatePersonal: (val) => update((prev) => ({ ...prev, personal: val })),
-        updateMetrics: (val) => update((prev) => ({ ...prev, metrics: val })),
-        updateAbout: (val) => update((prev) => ({ ...prev, about: val })),
-        updateTechStack: (val) => update((prev) => ({ ...prev, techStack: val })),
-        updateExtraTechs: (val) => update((prev) => ({ ...prev, extraTechs: val })),
-        updateProjects: (val) => update((prev) => ({ ...prev, projects: val })),
-        updatePhilosophy: (val) => update((prev) => ({ ...prev, philosophy: val })),
-        updateAdmin: (val) => update((prev) => ({ ...prev, admin: val })),
-        resetToDefaults: () => update(() => DEFAULT_DATA),
+        updatePersonal: (val) => update("personal", val),
+        updateMetrics: (val) => update("metrics", val),
+        updateAbout: (val) => update("about", val),
+        updateTechStack: (val) => update("techStack", val),
+        updateExtraTechs: (val) => update("extraTechs", val),
+        updateProjects: (val) => update("projects", val),
+        updatePhilosophy: (val) => update("philosophy", val),
+        updateAdmin: (val) => update("admin", val),
+        resetToDefaults: () => {
+          setData(DEFAULT_DATA);
+          saveData(DEFAULT_DATA);
+          // Persist all sections on reset
+          for (const key of Object.keys(DEFAULT_DATA) as (keyof SiteData)[]) {
+            void persistSection(key, DEFAULT_DATA[key]);
+          }
+        },
       }}
     >
       {children}
