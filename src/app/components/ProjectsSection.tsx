@@ -81,7 +81,7 @@ function ProjectCard({ project }: { project: any }) {
       {project.projectUrl && (
         <div style={{ marginTop: "16px", display: "flex", justifyContent: "center" }}>
           <a
-            href={project.projectUrl}
+            href={project.projectUrl.match(/^https?:\/\//) ? project.projectUrl : `https://${project.projectUrl}`}
             target="_blank"
             rel="noopener noreferrer"
             style={{
