@@ -62,6 +62,7 @@ export interface SiteData {
     linkedinUrl: string;
     email: string;
     location: string;
+    photoUrl: string;
   };
   metrics: MetricItem[];
   about: {
