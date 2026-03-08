@@ -168,7 +168,7 @@ export function HeroSection() {
       <div style={{ position: "absolute", top: "20%", right: "15%", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, rgba(0,194,255,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
       <div style={{ position: "absolute", bottom: "10%", left: "5%", width: "300px", height: "300px", borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "120px 24px 80px", position: "relative", zIndex: 1, width: "100%" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "120px 24px 80px", paddingLeft: "calc(50vw - 480px)", position: "relative", zIndex: 1, width: "100%" }}>
 
         {/* Content container with photo positioned behind name */}
         <div style={{ position: "relative" }}>
