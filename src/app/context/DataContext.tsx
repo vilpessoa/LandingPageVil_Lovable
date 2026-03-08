@@ -386,11 +386,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const update = (computeNext: (prev: SiteData) => SiteData) => {
+  const update = (sectionKey: keyof SiteData, value: any) => {
     setData((prev) => {
-      const next = computeNext(prev);
+      const next = { ...prev, [sectionKey]: value };
       saveData(next);
-      void persistRemote(next);
+      void persistSection(sectionKey, value);
       return next;
     });
   };
@@ -399,15 +399,22 @@ export function DataProvider({ children }: { children: ReactNode }) {
     <DataContext.Provider
       value={{
         data,
-        updatePersonal: (val) => update((prev) => ({ ...prev, personal: val })),
-        updateMetrics: (val) => update((prev) => ({ ...prev, metrics: val })),
-        updateAbout: (val) => update((prev) => ({ ...prev, about: val })),
-        updateTechStack: (val) => update((prev) => ({ ...prev, techStack: val })),
-        updateExtraTechs: (val) => update((prev) => ({ ...prev, extraTechs: val })),
-        updateProjects: (val) => update((prev) => ({ ...prev, projects: val })),
-        updatePhilosophy: (val) => update((prev) => ({ ...prev, philosophy: val })),
-        updateAdmin: (val) => update((prev) => ({ ...prev, admin: val })),
-        resetToDefaults: () => update(() => DEFAULT_DATA),
+        updatePersonal: (val) => update("personal", val),
+        updateMetrics: (val) => update("metrics", val),
+        updateAbout: (val) => update("about", val),
+        updateTechStack: (val) => update("techStack", val),
+        updateExtraTechs: (val) => update("extraTechs", val),
+        updateProjects: (val) => update("projects", val),
+        updatePhilosophy: (val) => update("philosophy", val),
+        updateAdmin: (val) => update("admin", val),
+        resetToDefaults: () => {
+          setData(DEFAULT_DATA);
+          saveData(DEFAULT_DATA);
+          // Persist all sections on reset
+          for (const key of Object.keys(DEFAULT_DATA) as (keyof SiteData)[]) {
+            void persistSection(key, DEFAULT_DATA[key]);
+          }
+        },
       }}
     >
       {children}
