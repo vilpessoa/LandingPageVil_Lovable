@@ -76,7 +76,7 @@ function ProfilePhoto({ photoUrl, initials, scale, offsetX, offsetY }: {
         height: "220px",
         borderRadius: "50%",
         overflow: "hidden",
-        animation: "heroFloat 4s ease-in-out infinite",
+        animation: "heroFloat 6s ease-in-out infinite",
         flexShrink: 0,
       }}>
         <img
@@ -121,7 +121,7 @@ function ProfilePhoto({ photoUrl, initials, scale, offsetX, offsetY }: {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      animation: "heroFloat 4s ease-in-out infinite",
+      animation: "heroFloat 6s ease-in-out infinite",
       flexShrink: 0,
     }}>
       <span style={{
@@ -256,7 +256,7 @@ export function HeroSection() {
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes heroFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes heroFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         @media (max-width: 768px) {
           .hero-photo-pos {
             position: relative !important;
