@@ -232,6 +232,79 @@ function PersonalEditor() {
         </div>
       </Field>
 
+      {/* Photo adjustment sliders */}
+      {form.photoUrl && (
+        <div style={{ ...S.card, marginBottom: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+            <span style={{ ...S.label, marginBottom: 0 }}>Ajuste da Imagem</span>
+            <button
+              onClick={() => { set("photoScale", 1); set("photoOffsetX", 0); set("photoOffsetY", 0); }}
+              style={{ padding: "4px 12px", borderRadius: "6px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#9CA3AF", fontFamily: "'Inter', sans-serif", fontSize: "12px", cursor: "pointer" }}
+            >
+              Centralizar
+            </button>
+          </div>
+
+          {/* Live preview */}
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
+            <div style={{ width: "120px", height: "120px", borderRadius: "50%", overflow: "hidden", border: "2px solid rgba(0,194,255,0.2)", position: "relative" }}>
+              <img
+                src={form.photoUrl}
+                alt="Preview"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: `${50 + (form.photoOffsetX || 0)}% ${50 + (form.photoOffsetY || 0)}%`,
+                  transform: `scale(${form.photoScale || 1})`,
+                }}
+              />
+              <div style={{
+                position: "absolute",
+                inset: 0,
+                borderRadius: "50%",
+                background: "linear-gradient(to top, #0F172A 0%, rgba(15,23,42,0.6) 35%, transparent 55%)",
+                pointerEvents: "none",
+              }} />
+            </div>
+          </div>
+
+          <Field label={`Zoom: ${(form.photoScale || 1).toFixed(1)}x`}>
+            <input
+              type="range"
+              min="0.5"
+              max="3"
+              step="0.1"
+              value={form.photoScale || 1}
+              onChange={(e) => set("photoScale", parseFloat(e.target.value))}
+              style={{ width: "100%", accentColor: "#00C2FF" }}
+            />
+          </Field>
+          <Field label={`Posição X: ${form.photoOffsetX || 0}`}>
+            <input
+              type="range"
+              min="-50"
+              max="50"
+              step="1"
+              value={form.photoOffsetX || 0}
+              onChange={(e) => set("photoOffsetX", parseInt(e.target.value))}
+              style={{ width: "100%", accentColor: "#00C2FF" }}
+            />
+          </Field>
+          <Field label={`Posição Y: ${form.photoOffsetY || 0}`}>
+            <input
+              type="range"
+              min="-50"
+              max="50"
+              step="1"
+              value={form.photoOffsetY || 0}
+              onChange={(e) => set("photoOffsetY", parseInt(e.target.value))}
+              style={{ width: "100%", accentColor: "#00C2FF" }}
+            />
+          </Field>
+        </div>
+      )}
+
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
         <Field label="Primeiro Nome"><input style={S.input} value={form.firstName} onChange={(e) => set("firstName", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
         <Field label="Sobrenome"><input style={S.input} value={form.lastName} onChange={(e) => set("lastName", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
