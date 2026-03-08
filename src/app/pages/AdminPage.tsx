@@ -165,11 +165,73 @@ function PersonalEditor() {
   const { data, updatePersonal } = useSiteData();
   const [form, setForm] = useState({ ...data.personal });
   const { saved, trigger } = useSaved();
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const set = (k: keyof typeof form, v: any) => setForm((f) => ({ ...f, [k]: v }));
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const fileName = `profile-photo.${ext}`;
+      const { error } = await supabase.storage.from("profile").upload(fileName, file, { upsert: true });
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from("profile").getPublicUrl(fileName);
+      const url = `${urlData.publicUrl}?t=${Date.now()}`;
+      set("photoUrl", url);
+    } catch (err) {
+      console.error("Upload failed:", err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removePhoto = async () => {
+    try {
+      await supabase.storage.from("profile").remove(["profile-photo.jpg", "profile-photo.png", "profile-photo.webp", "profile-photo.jpeg"]);
+    } catch {}
+    set("photoUrl", "");
+  };
 
   return (
     <div>
       <h2 style={S.sectionTitle}>🧑 Perfil & Hero</h2>
+
+      {/* Photo upload */}
+      <Field label="Foto de Perfil">
+        <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "8px" }}>
+          {form.photoUrl ? (
+            <div style={{ width: "80px", height: "80px", borderRadius: "50%", overflow: "hidden", border: "2px solid rgba(0,194,255,0.4)", flexShrink: 0 }}>
+              <img src={form.photoUrl} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </div>
+          ) : (
+            <div style={{ width: "80px", height: "80px", borderRadius: "50%", border: "2px dashed rgba(0,194,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "#9CA3AF", fontSize: "12px", flexShrink: 0 }}>
+              Sem foto
+            </div>
+          )}
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            <input ref={fileRef} type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: "none" }} />
+            <button
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              style={{ padding: "8px 16px", borderRadius: "8px", background: "rgba(0,194,255,0.1)", border: "1px solid rgba(0,194,255,0.25)", color: "#00C2FF", fontFamily: "'Inter', sans-serif", fontSize: "13px", cursor: "pointer" }}
+            >
+              {uploading ? "Enviando..." : "Upload foto"}
+            </button>
+            {form.photoUrl && (
+              <button
+                onClick={removePhoto}
+                style={{ padding: "8px 16px", borderRadius: "8px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#EF4444", fontFamily: "'Inter', sans-serif", fontSize: "13px", cursor: "pointer" }}
+              >
+                Remover
+              </button>
+            )}
+          </div>
+        </div>
+      </Field>
+
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
         <Field label="Primeiro Nome"><input style={S.input} value={form.firstName} onChange={(e) => set("firstName", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
         <Field label="Sobrenome"><input style={S.input} value={form.lastName} onChange={(e) => set("lastName", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
