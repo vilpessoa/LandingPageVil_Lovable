@@ -42,6 +42,8 @@ export interface Project {
   metrics: ProjectMetric[];
   color: string;
   icon: string;
+  imageUrl?: string;
+  projectUrl?: string;
 }
 
 export interface Principle {
