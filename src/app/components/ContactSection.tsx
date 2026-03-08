@@ -99,6 +99,7 @@ export function ContactSection() {
         </p>
         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "#4B5563" }}>Transformando dados em decisões estratégicas.</p>
       </div>
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </section>
   );
 }
