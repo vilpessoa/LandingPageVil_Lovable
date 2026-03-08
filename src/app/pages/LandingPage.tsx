@@ -6,7 +6,6 @@ import { TechStackSection } from "../components/TechStackSection";
 import { ProjectsSection } from "../components/ProjectsSection";
 import { PhilosophySection } from "../components/PhilosophySection";
 import { ContactSection } from "../components/ContactSection";
-import { PrintPage } from "./PrintPage";
 
 export function LandingPage() {
   return (
@@ -36,9 +35,6 @@ export function LandingPage() {
         <ProjectsSection />
         <PhilosophySection />
         <ContactSection />
-      </div>
-      <div className="print-content" style={{ display: "none" }}>
-        <PrintPage embedded />
       </div>
     </div>
   );

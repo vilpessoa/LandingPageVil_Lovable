@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Linkedin, Mail, MapPin, ArrowUpRight, Download } from "lucide-react";
 import { useSiteData } from "../context/DataContext";
+import { downloadFile } from "../utils/downloadFile";
 
 function DownloadButton() {
   return (
     <button
-      onClick={() => window.print()}
+      onClick={() => downloadFile("/Vilcimar_Portfolio.pdf", "Vilcimar_Portfolio.pdf")}
       style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "16px 36px", borderRadius: "8px", background: "transparent", color: "#F9FAFB", fontFamily: "'Inter', sans-serif", fontSize: "15px", fontWeight: 600, border: "1px solid rgba(255,255,255,0.12)", cursor: "pointer", textDecoration: "none", transition: "all 0.25s ease" }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(0,194,255,0.3)"; e.currentTarget.style.color = "#00C2FF"; e.currentTarget.style.transform = "translateY(-2px)"; }}
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; e.currentTarget.style.color = "#F9FAFB"; e.currentTarget.style.transform = "translateY(0)"; }}

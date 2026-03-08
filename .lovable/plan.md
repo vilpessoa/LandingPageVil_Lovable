@@ -1,21 +1,24 @@
 
 
-## Corrigir Download do PDF
+## Problem
+The `<a download="...">` approach doesn't work reliably across all browsers and devices — especially on mobile and within iframe-based previews. The file either doesn't download or opens incorrectly.
 
-O problema: ambos os botões de download (HeroSection e ContactSection) usam `window.print()`, que abre a página de impressão. O utilitário `downloadFile.ts` já existe e faz exatamente o que você quer (fetch + blob + download forçado), mas não está sendo usado.
+## Solution
+Create a helper function that uses `fetch()` + `Blob` + programmatic click to force a real download. This is the most reliable cross-platform approach.
 
-### Alterações
+### Changes
 
-**1. HeroSection.tsx** (linha 67)
-- Trocar `window.print()` por `downloadFile("/Vilcimar_Portfolio.pdf", "Vilcimar_Portfolio.pdf")`
-- Importar `downloadFile` do utilitário
+**1. Create `src/app/utils/downloadFile.ts`**
+A utility function that:
+- Fetches `/Vilcimar_Portfolio.pdf` as a blob
+- Creates a temporary object URL
+- Programmatically clicks a hidden `<a>` element with the `download` attribute
+- Cleans up the object URL after download
 
-**2. ContactSection.tsx** (linha 8)
-- Trocar `window.print()` por `downloadFile("/Vilcimar_Portfolio.pdf", "Vilcimar_Portfolio.pdf")`
-- Importar `downloadFile` do utilitário
+**2. Update `HeroSection.tsx`**
+- Replace the `<a href download>` with a `<button>` that calls the download utility on click
 
-**3. LandingPage.tsx**
-- Remover o `<PrintPage embedded />` e o bloco `.print-content` que não serão mais necessários
+**3. Update `ContactSection.tsx`**
+- Same change as HeroSection — use the download utility instead of native `<a download>`
 
-Resultado: clique no botão → download direto do PDF, sem redirecionamento nem página de impressão.
-
+This approach works on desktop, mobile (iOS Safari, Android Chrome), and inside iframe previews.
