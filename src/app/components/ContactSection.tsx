@@ -103,7 +103,7 @@ export function ContactSection() {
 
       <div style={{ maxWidth: "900px", margin: "60px auto 0", paddingTop: "32px", borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "#9CA3AF" }}>
-          © 2025 <span style={{ color: "#00C2FF" }}>{personal.firstName} {personal.lastName}</span> · {personal.title}
+          © {new Date().getFullYear()} <span style={{ color: "#00C2FF" }}>{personal.firstName} {personal.lastName}</span> · {personal.title}
         </p>
         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "#4B5563" }}>Transformando dados em decisões estratégicas.</p>
       </div>
