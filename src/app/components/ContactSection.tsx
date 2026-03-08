@@ -3,12 +3,12 @@ import { Linkedin, Mail, MapPin, ArrowUpRight, Download, Loader2 } from "lucide-
 import { useSiteData } from "../context/DataContext";
 import { generatePDF } from "../utils/generatePDF";
 
-function DownloadButton() {
+function DownloadButton({ data }: { data: ReturnType<typeof useSiteData>["data"] }) {
   const [generating, setGenerating] = useState(false);
   const handleDownload = async () => {
     setGenerating(true);
-    try { await generatePDF(); } catch (e) { console.error(e); }
-    setGenerating(false);
+    try { await generatePDF(data); } catch (e) { console.error(e); }
+    finally { setGenerating(false); }
   };
   return (
     <button
