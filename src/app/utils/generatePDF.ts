@@ -5,14 +5,12 @@ import { createElement } from "react";
 
 const PAGE_WIDTH_MM = 210;
 const PAGE_HEIGHT_MM = 297;
-const RENDER_WIDTH_PX = 794; // A4 width at ~96dpi
+const RENDER_WIDTH_PX = 794;
 
 export async function generatePDF(fileName?: string): Promise<void> {
-  // Dynamically import PrintPage and DataProvider to avoid circular deps
   const { PrintPage } = await import("../pages/PrintPage");
   const { DataProvider } = await import("../context/DataContext");
 
-  // Create hidden container in the main DOM (not an iframe)
   const container = document.createElement("div");
   container.style.position = "fixed";
   container.style.left = "-9999px";
@@ -27,7 +25,6 @@ export async function generatePDF(fileName?: string): Promise<void> {
   let root: ReturnType<typeof createRoot> | null = null;
 
   try {
-    // Render PrintPage directly in the current document
     root = createRoot(container);
     root.render(
       createElement(DataProvider, null,
@@ -35,10 +32,9 @@ export async function generatePDF(fileName?: string): Promise<void> {
       )
     );
 
-    // Wait for fonts
     await document.fonts.ready;
 
-    // Wait for React to render + images to load
+    // Wait for React to render
     await new Promise<void>((resolve) => {
       let attempts = 0;
       const check = () => {
@@ -47,7 +43,7 @@ export async function generatePDF(fileName?: string): Promise<void> {
         if (printPage && printPage.children.length > 0 && attempts >= 3) {
           resolve();
         } else if (attempts > 30) {
-          resolve(); // timeout after ~3s
+          resolve();
         } else {
           requestAnimationFrame(check);
         }
@@ -61,59 +57,76 @@ export async function generatePDF(fileName?: string): Promise<void> {
     const printPage = container.querySelector(".print-page") as HTMLElement;
     if (!printPage) throw new Error("Print page not found");
 
-    // Capture the entire print page as one large canvas
-    const fullCanvas = await html2canvas(printPage, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#0F172A",
-      width: RENDER_WIDTH_PX,
-      windowWidth: RENDER_WIDTH_PX,
-      logging: false,
-      allowTaint: true,
-    });
-
-    // Calculate page slicing
-    const pxPerMm = fullCanvas.width / PAGE_WIDTH_MM;
-    const pageHeightPx = PAGE_HEIGHT_MM * pxPerMm;
-    const totalPages = Math.ceil(fullCanvas.height / pageHeightPx);
+    // Capture each .section-block individually
+    const sections = printPage.querySelectorAll(".section-block");
+    if (!sections.length) throw new Error("No sections found");
 
     const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
-    for (let page = 0; page < totalPages; page++) {
-      if (page > 0) pdf.addPage();
+    for (let i = 0; i < sections.length; i++) {
+      if (i > 0) pdf.addPage();
 
-      // Calculate slice coordinates
-      const srcY = page * pageHeightPx;
-      const srcHeight = Math.min(pageHeightPx, fullCanvas.height - srcY);
-      const destHeightMM = (srcHeight / pxPerMm);
+      const section = sections[i] as HTMLElement;
 
-      // Create a canvas for this page slice
-      const pageCanvas = document.createElement("canvas");
-      pageCanvas.width = fullCanvas.width;
-      pageCanvas.height = Math.round(pageHeightPx); // always full page height
-      const ctx = pageCanvas.getContext("2d")!;
+      const canvas = await html2canvas(section, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null,
+        width: RENDER_WIDTH_PX,
+        windowWidth: RENDER_WIDTH_PX,
+        logging: false,
+        allowTaint: true,
+      });
 
-      // Fill with background color first
-      ctx.fillStyle = "#0F172A";
-      ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+      const imgWidth = PAGE_WIDTH_MM;
+      const imgHeight = (canvas.height / canvas.width) * imgWidth;
 
-      // Draw the slice of the full canvas
-      ctx.drawImage(
-        fullCanvas,
-        0, Math.round(srcY),                          // source x, y
-        fullCanvas.width, Math.round(srcHeight),      // source w, h
-        0, 0,                                          // dest x, y
-        fullCanvas.width, Math.round(srcHeight)        // dest w, h
-      );
+      // If section fits in one page, place it at top with background fill
+      if (imgHeight <= PAGE_HEIGHT_MM) {
+        // Fill entire page with background color
+        pdf.setFillColor(15, 23, 42); // #0F172A
+        pdf.rect(0, 0, PAGE_WIDTH_MM, PAGE_HEIGHT_MM, "F");
+        // Place section image at top
+        const imgData = canvas.toDataURL("image/jpeg", 0.92);
+        pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
+      } else {
+        // Section is taller than one page — slice it
+        const pxPerMm = canvas.width / PAGE_WIDTH_MM;
+        const pageHeightPx = PAGE_HEIGHT_MM * pxPerMm;
+        const totalSubPages = Math.ceil(canvas.height / pageHeightPx);
 
-      const imgData = pageCanvas.toDataURL("image/jpeg", 0.92);
-      pdf.addImage(imgData, "JPEG", 0, 0, PAGE_WIDTH_MM, PAGE_HEIGHT_MM);
+        for (let sp = 0; sp < totalSubPages; sp++) {
+          if (sp > 0) pdf.addPage();
+
+          const srcY = sp * pageHeightPx;
+          const srcHeight = Math.min(pageHeightPx, canvas.height - srcY);
+
+          const pageCanvas = document.createElement("canvas");
+          pageCanvas.width = canvas.width;
+          pageCanvas.height = Math.round(pageHeightPx);
+          const ctx = pageCanvas.getContext("2d")!;
+
+          // Fill with background
+          ctx.fillStyle = "#0F172A";
+          ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+
+          ctx.drawImage(
+            canvas,
+            0, Math.round(srcY),
+            canvas.width, Math.round(srcHeight),
+            0, 0,
+            canvas.width, Math.round(srcHeight)
+          );
+
+          const imgData = pageCanvas.toDataURL("image/jpeg", 0.92);
+          pdf.addImage(imgData, "JPEG", 0, 0, PAGE_WIDTH_MM, PAGE_HEIGHT_MM);
+        }
+      }
     }
 
     const safeName = (fileName || "Portfolio").replace(/\.pdf$/i, "");
     pdf.save(`${safeName}.pdf`);
   } finally {
-    // Cleanup
     if (root) {
       root.unmount();
     }
