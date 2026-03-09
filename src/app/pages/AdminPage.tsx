@@ -206,7 +206,111 @@ function CollapsibleCard({
   );
 }
 
+// ─── Lucide Icon Select ───────────────────────────────────────────────────────
+
+const POPULAR_ICONS = [
+  "BarChart3", "TrendingUp", "Database", "Cpu", "Zap", "Target",
+  "Clock", "Users", "Star", "Award", "Globe", "Server",
+  "Cloud", "Lock", "Settings", "Layers", "GitBranch", "Terminal",
+  "Monitor", "Smartphone", "Puzzle", "Rocket", "LineChart", "PieChart",
+  "Activity", "Box", "Workflow", "Code", "Eye", "Search",
+  "Shield", "Heart", "Mail", "Calendar", "Bookmark", "Flag",
+  "Briefcase", "FileText", "Image", "Video", "Music", "Mic",
+  "Headphones", "Camera", "Download", "Upload", "Share2", "Link",
+];
+
+function LucideIconSelect({ value, onChange, color = "#00C2FF" }: { value: string; onChange: (v: string) => void; color?: string }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  const filtered = search
+    ? Object.keys(icons).filter((k) => k.toLowerCase().includes(search.toLowerCase())).slice(0, 36)
+    : POPULAR_ICONS;
+
+  const SelectedIcon = icons[value as keyof typeof icons];
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        style={{
+          ...S.input,
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          cursor: "pointer",
+          borderColor: open ? color : "rgba(255,255,255,0.1)",
+        }}
+      >
+        {SelectedIcon ? <SelectedIcon size={16} color={color} /> : null}
+        <span style={{ fontSize: "13px" }}>{value || "Selecionar"}</span>
+      </button>
+
+      {open && (
+        <div style={{
+          position: "absolute", top: "46px", left: 0, zIndex: 200,
+          width: "300px", background: "#1E293B", border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: "12px", padding: "12px", boxShadow: "0 12px 40px rgba(0,0,0,0.5)",
+        }}>
+          <input
+            style={{
+              width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "6px", padding: "8px 10px", color: "#F9FAFB", fontSize: "13px",
+              outline: "none", fontFamily: "'Inter', sans-serif", marginBottom: "10px",
+            }}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar ícone..."
+            autoFocus
+          />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "4px", maxHeight: "200px", overflowY: "auto" }}>
+            {filtered.map((name) => {
+              const Icon = icons[name as keyof typeof icons];
+              if (!Icon) return null;
+              const selected = value === name;
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  title={name}
+                  onClick={() => { onChange(name); setOpen(false); setSearch(""); }}
+                  style={{
+                    width: "42px", height: "42px", display: "flex", alignItems: "center", justifyContent: "center",
+                    borderRadius: "6px", border: selected ? `2px solid ${color}` : "1px solid transparent",
+                    background: selected ? `${color}15` : "rgba(255,255,255,0.03)",
+                    cursor: "pointer", color: selected ? color : "#D1D5DB",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  <Icon size={18} />
+                </button>
+              );
+            })}
+          </div>
+          {filtered.length === 0 && (
+            <p style={{ color: "#6B7280", fontSize: "12px", textAlign: "center", padding: "12px 0" }}>
+              Nenhum ícone encontrado
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Login ────────────────────────────────────────────────────────────────────
+
 
 function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const { data } = useSiteData();
