@@ -209,14 +209,33 @@ function CollapsibleCard({
 // ─── Lucide Icon Select ───────────────────────────────────────────────────────
 
 const POPULAR_ICONS = [
-  "BarChart3", "TrendingUp", "Database", "Cpu", "Zap", "Target",
-  "Clock", "Users", "Star", "Award", "Globe", "Server",
-  "Cloud", "Lock", "Settings", "Layers", "GitBranch", "Terminal",
-  "Monitor", "Smartphone", "Puzzle", "Rocket", "LineChart", "PieChart",
-  "Activity", "Box", "Workflow", "Code", "Eye", "Search",
-  "Shield", "Heart", "Mail", "Calendar", "Bookmark", "Flag",
-  "Briefcase", "FileText", "Image", "Video", "Music", "Mic",
-  "Headphones", "Camera", "Download", "Upload", "Share2", "Link",
+  // Dados / Analytics
+  "BarChart3", "BarChart2", "BarChart4", "AreaChart", "LineChart", "PieChart",
+  "ScatterChart", "TrendingUp", "Activity", "Gauge", "Sigma", "Hash",
+  "Percent", "Calculator", "TableProperties",
+  // Tech / Dev
+  "Code", "Code2", "CodeXml", "Binary", "Braces", "Terminal",
+  "CircuitBoard", "Cpu", "HardDrive", "Server", "Database", "Cloud",
+  "Wifi", "Bluetooth", "Router", "Github", "Container", "Blocks",
+  "GitBranch", "Monitor", "Smartphone",
+  // Business / Finance
+  "Building", "Building2", "Briefcase", "HandCoins", "Wallet", "CreditCard",
+  "Receipt", "BadgeDollarSign", "Store", "ShoppingCart", "Package", "Truck",
+  "DollarSign", "Banknote",
+  // UI / Navigation
+  "LayoutDashboard", "LayoutGrid", "PanelLeft", "Columns3", "SlidersHorizontal",
+  "ToggleLeft", "Filter", "SortAsc", "ArrowUpDown", "ListChecks", "ClipboardList",
+  "Layers", "Box", "Workflow", "Puzzle",
+  // People / Social
+  "Users", "UserCheck", "UserPlus", "UsersRound", "MessageCircle",
+  "MessagesSquare", "AtSign", "Bell", "ThumbsUp", "Mail", "Share2",
+  // General / Misc
+  "Zap", "Target", "Rocket", "Star", "Award", "Trophy", "Medal", "Crown",
+  "Lightbulb", "Flame", "Sparkles", "GraduationCap", "Globe", "MapPin",
+  "Navigation", "Compass", "Palette", "Pen", "Wrench", "Cog", "Settings",
+  "Key", "Lock", "Shield", "Fingerprint", "ScanLine", "Eye", "Search",
+  "Heart", "Bookmark", "Flag", "Calendar", "Clock", "FileText",
+  "Download", "Upload", "Link", "Image",
 ];
 
 function LucideIconSelect({ value, onChange, color = "#00C2FF" }: { value: string; onChange: (v: string) => void; color?: string }) {
