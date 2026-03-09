@@ -806,7 +806,7 @@ function PhilosophyEditor() {
 
       <label style={{ ...S.label, marginTop: "8px" }}>Princípios</label>
       {form.principles.map((p, i) => (
-        <div key={i} style={{ ...S.card }}>
+        <CollapsibleCard key={i} title={p.title} onRemove={() => removePrinciple(i)}>
           <div style={{ display: "flex", gap: "12px" }}>
             <div style={{ width: "70px" }}>
               <label style={S.label}>Número</label>
@@ -816,13 +816,12 @@ function PhilosophyEditor() {
               <label style={S.label}>Título</label>
               <input style={S.input} value={p.title} onChange={(e) => updatePrinciple(i, "title", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} />
             </div>
-            <button onClick={() => removePrinciple(i)} style={{ alignSelf: "flex-end", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "6px", color: "#EF4444", cursor: "pointer", padding: "8px 10px" }}><Trash2 size={12} /></button>
           </div>
           <div style={{ marginTop: "12px" }}>
             <label style={S.label}>Descrição</label>
             <input style={S.input} value={p.desc} onChange={(e) => updatePrinciple(i, "desc", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} />
           </div>
-        </div>
+        </CollapsibleCard>
       ))}
       <div style={{ display: "flex", gap: "12px" }}>
         <button onClick={addPrinciple} style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "10px 18px", borderRadius: "8px", background: "rgba(0,194,255,0.1)", border: "1px solid rgba(0,194,255,0.25)", color: "#00C2FF", fontFamily: "'Inter', sans-serif", fontSize: "14px", cursor: "pointer" }}>
