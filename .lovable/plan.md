@@ -1,24 +1,37 @@
 
 
-## Problem
-The `<a download="...">` approach doesn't work reliably across all browsers and devices — especially on mobile and within iframe-based previews. The file either doesn't download or opens incorrectly.
+## Fix PDF text overlap — capture each section-block as a separate page
 
-## Solution
-Create a helper function that uses `fetch()` + `Blob` + programmatic click to force a real download. This is the most reliable cross-platform approach.
+### Root Cause
+The current `generatePDF.ts` captures the entire `.print-page` as one tall canvas and blindly slices it every 297mm. But the content doesn't align perfectly to A4 boundaries, so the slicer cuts through text, causing overlap between pages.
+
+### Solution
+Instead of capturing one giant canvas and slicing, **capture each `.section-block` individually** and place each on its own PDF page. This respects the natural page boundaries already defined in the PrintPage layout.
 
 ### Changes
 
-**1. Create `src/app/utils/downloadFile.ts`**
-A utility function that:
-- Fetches `/Vilcimar_Portfolio.pdf` as a blob
-- Creates a temporary object URL
-- Programmatically clicks a hidden `<a>` element with the `download` attribute
-- Cleans up the object URL after download
+**`src/app/utils/generatePDF.ts`** — Replace the single-canvas-slice approach:
+1. After rendering, query all `.section-block` elements inside `.print-page`
+2. Loop through each section-block, call `html2canvas` on each one individually
+3. Add each captured canvas as a separate PDF page, scaling to fit A4 width (210mm) and positioning at top
+4. If a section is taller than A4, fall back to slicing just that section
+5. Remove the old full-canvas + slice logic entirely
 
-**2. Update `HeroSection.tsx`**
-- Replace the `<a href download>` with a `<button>` that calls the download utility on click
+**`src/app/pages/PrintPage.tsx`** — Ensure each logical page is a separate `.section-block`:
+- The structure already has this correctly (Page 1: Hero+Metrics, Page 2: About+TechStack, Pages 3+: Project pairs, Last: Philosophy+Contact)
+- Each has `page-break` class — no changes needed here
 
-**3. Update `ContactSection.tsx`**
-- Same change as HeroSection — use the download utility instead of native `<a download>`
+### Key code change (generatePDF.ts):
+```typescript
+const sections = printPage.querySelectorAll(".section-block");
+for (let i = 0; i < sections.length; i++) {
+  if (i > 0) pdf.addPage();
+  const canvas = await html2canvas(sections[i] as HTMLElement, { scale: 2, ... });
+  const imgWidth = PAGE_WIDTH_MM;
+  const imgHeight = (canvas.height / canvas.width) * imgWidth;
+  pdf.addImage(canvas.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, imgWidth, imgHeight);
+}
+```
 
-This approach works on desktop, mobile (iOS Safari, Android Chrome), and inside iframe previews.
+This eliminates all overlap issues since each section is captured and placed independently.
+
