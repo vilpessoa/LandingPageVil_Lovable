@@ -579,9 +579,7 @@ function MetricsEditor() {
           <Field label="Subtítulo"><input style={S.input} value={metric.sublabel} onChange={(e) => update(metric.id, "sublabel", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <Field label="Ícone">
-              <select style={{ ...S.input }} value={metric.icon} onChange={(e) => update(metric.id, "icon", e.target.value)}>
-                {ICONS.map((ic) => <option key={ic} value={ic}>{ic}</option>)}
-              </select>
+              <LucideIconSelect value={metric.icon} onChange={(v) => update(metric.id, "icon", v)} color={metric.color} />
             </Field>
             <Field label="Cor">
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", paddingTop: "4px" }}>
