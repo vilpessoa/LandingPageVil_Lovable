@@ -99,6 +99,112 @@ function useSaved() {
   return { saved, trigger };
 }
 
+// ─── Collapsible Card ─────────────────────────────────────────────────────────
+
+function CollapsibleCard({
+  title,
+  color,
+  defaultOpen = false,
+  onRemove,
+  children,
+}: {
+  title: string;
+  color?: string;
+  defaultOpen?: boolean;
+  onRemove?: () => void;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div
+      style={{
+        ...S.card,
+        borderColor: color ? `${color}25` : "rgba(255,255,255,0.06)",
+        padding: 0,
+        overflow: "hidden",
+      }}
+    >
+      {/* Header */}
+      <div
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          padding: "14px 16px",
+          cursor: "pointer",
+          userSelect: "none",
+          background: open ? "rgba(255,255,255,0.02)" : "transparent",
+          transition: "background 0.15s",
+        }}
+      >
+        {color && (
+          <div
+            style={{
+              width: "10px",
+              height: "10px",
+              borderRadius: "3px",
+              background: color,
+              flexShrink: 0,
+            }}
+          />
+        )}
+        <ChevronDown
+          size={16}
+          style={{
+            color: "#9CA3AF",
+            transition: "transform 0.2s",
+            transform: open ? "rotate(0deg)" : "rotate(-90deg)",
+            flexShrink: 0,
+          }}
+        />
+        <span
+          style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: "14px",
+            fontWeight: 600,
+            color: "#F9FAFB",
+            flex: 1,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {title || "Sem título"}
+        </span>
+        {onRemove && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+            style={{
+              background: "rgba(239,68,68,0.1)",
+              border: "1px solid rgba(239,68,68,0.2)",
+              borderRadius: "6px",
+              color: "#EF4444",
+              cursor: "pointer",
+              padding: "4px 8px",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              fontSize: "12px",
+              flexShrink: 0,
+            }}
+          >
+            <Trash2 size={12} /> Remover
+          </button>
+        )}
+      </div>
+      {/* Body */}
+      {open && (
+        <div style={{ padding: "0 24px 24px" }}>{children}</div>
+      )}
+    </div>
+  );
+}
+
 // ─── Login ────────────────────────────────────────────────────────────────────
 
 function LoginScreen({ onLogin }: { onLogin: () => void }) {
