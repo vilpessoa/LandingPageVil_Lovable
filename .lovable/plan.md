@@ -1,24 +1,20 @@
 
 
-## Problem
-The `<a download="...">` approach doesn't work reliably across all browsers and devices — especially on mobile and within iframe-based previews. The file either doesn't download or opens incorrectly.
+## Expandir catálogo de ícones populares no LucideIconSelect
 
-## Solution
-Create a helper function that uses `fetch()` + `Blob` + programmatic click to force a real download. This is the most reliable cross-platform approach.
+### Problema
+A lista `POPULAR_ICONS` tem apenas 48 ícones, muitos genéricos (Music, Mic, Headphones, Camera) e faltam ícones úteis para portfolio/BI/tech.
 
-### Changes
+### Solução
+Expandir `POPULAR_ICONS` para ~120 ícones, organizados por categorias relevantes: dados/analytics, tecnologia, negócios, UI/interface, comunicação, finanças, design, etc. Remover os menos úteis (Music, Mic, Headphones, Camera, Video) e adicionar ícones como:
 
-**1. Create `src/app/utils/downloadFile.ts`**
-A utility function that:
-- Fetches `/Vilcimar_Portfolio.pdf` as a blob
-- Creates a temporary object URL
-- Programmatically clicks a hidden `<a>` element with the `download` attribute
-- Cleans up the object URL after download
+- **Dados/Analytics:** BarChart, BarChart2, BarChart4, AreaChart, ScatterChart, Gauge, Sigma, Hash, Percent, Calculator, TableProperties
+- **Tech/Dev:** Code2, CodeXml, Binary, Braces, CircuitBoard, Cpu, HardDrive, Wifi, Bluetooth, Router, Github, Container, Blocks
+- **Business:** Building, Building2, HandCoins, Wallet, CreditCard, Receipt, BadgeDollarSign, Store, ShoppingCart, Package, Truck
+- **UI/Navigation:** LayoutDashboard, LayoutGrid, PanelLeft, Columns3, SlidersHorizontal, ToggleLeft, Filter, SortAsc, ArrowUpDown, ListChecks, ClipboardList
+- **People/Social:** UserCheck, UserPlus, UsersRound, MessageCircle, MessagesSquare, AtSign, Bell, ThumbsUp
+- **Misc útil:** Lightbulb, Flame, Sparkles, Crown, Trophy, Medal, GraduationCap, MapPin, Navigation, Compass, Palette, Pen, Wrench, Cog, Key, Fingerprint, ScanLine
 
-**2. Update `HeroSection.tsx`**
-- Replace the `<a href download>` with a `<button>` that calls the download utility on click
+### Arquivo alterado
+- `src/app/pages/AdminPage.tsx` — substituir array `POPULAR_ICONS` (linhas 211-220)
 
-**3. Update `ContactSection.tsx`**
-- Same change as HeroSection — use the download utility instead of native `<a download>`
-
-This approach works on desktop, mobile (iOS Safari, Android Chrome), and inside iframe previews.
