@@ -1,34 +1,24 @@
 
 
-## Adicionar collapse/expand nos itens repetíveis do Admin
+## Problem
+The `<a download="...">` approach doesn't work reliably across all browsers and devices — especially on mobile and within iframe-based previews. The file either doesn't download or opens incorrectly.
 
-### Problema
-Nas seções Métricas, Stack Tecnológica, Projetos e Filosofia (princípios), todos os cards de edição ficam totalmente expandidos simultaneamente. Com vários itens, fica difícil identificar em qual elemento se está trabalhando.
+## Solution
+Create a helper function that uses `fetch()` + `Blob` + programmatic click to force a real download. This is the most reliable cross-platform approach.
 
-### Solução
-Criar um componente `CollapsibleCard` que envolve cada item repetível. Cada card mostra apenas um **header resumo** (título/nome do item + botão expandir/recolher), e o conteúdo completo fica oculto até clicar.
+### Changes
 
-### Detalhes técnicos
+**1. Create `src/app/utils/downloadFile.ts`**
+A utility function that:
+- Fetches `/Vilcimar_Portfolio.pdf` as a blob
+- Creates a temporary object URL
+- Programmatically clicks a hidden `<a>` element with the `download` attribute
+- Cleans up the object URL after download
 
-**Novo componente `CollapsibleCard`** (dentro de `AdminPage.tsx`):
-- Props: `title` (string), `color` (opcional), `defaultOpen` (boolean, default false), `onRemove` (callback), `children`
-- Header: mostra o título do item, indicador de cor, chevron animado (rotação 90° quando aberto), botão remover
-- Body: renderiza `children` com `display: none` / `display: block` baseado no estado `open`
-- Transição suave com `max-height` + `overflow: hidden`
+**2. Update `HeroSection.tsx`**
+- Replace the `<a href download>` with a `<button>` that calls the download utility on click
 
-**Seções afetadas:**
+**3. Update `ContactSection.tsx`**
+- Same change as HeroSection — use the download utility instead of native `<a download>`
 
-1. **MetricsEditor** — cada métrica vira um `CollapsibleCard` com título = `metric.label` (ex: "Dashboards Estratégicos")
-2. **TechEditor** — cada categoria vira um `CollapsibleCard` com título = `cat.title` (ex: "BI & Visualização")  
-3. **ProjectsEditor** — cada projeto vira um `CollapsibleCard` com título = `proj.title` (ex: "Dashboard Executivo de Vendas")
-4. **PhilosophyEditor** — cada princípio vira um `CollapsibleCard` com título = `p.title` (ex: "Dados antes de Opiniões")
-
-**Comportamento:**
-- Todos iniciam **recolhidos** por padrão
-- Itens recém-adicionados iniciam **expandidos**
-- Clicar no header alterna entre expandido/recolhido
-- O botão "Remover" fica no header (sempre visível), sem precisar expandir
-
-### Arquivo alterado
-- `src/app/pages/AdminPage.tsx` — adicionar `CollapsibleCard` e aplicar em 4 editores
-
+This approach works on desktop, mobile (iOS Safari, Android Chrome), and inside iframe previews.

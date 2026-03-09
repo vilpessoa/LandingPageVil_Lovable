@@ -1,8 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, ReactNode } from "react";
 import { useNavigate } from "react-router";
 import {
   LogOut, Eye, User, BarChart3, Info, Layers, FolderKanban,
-  Quote, Shield, ChevronRight, Plus, Trash2, Save,
+  Quote, Shield, ChevronRight, ChevronDown, Plus, Trash2, Save,
   RotateCcw, Lock, AlertTriangle, CheckCircle2,
 } from "lucide-react";
 import { useSiteData, MetricItem, TechCategory, Project, Principle } from "../context/DataContext";
@@ -97,6 +97,112 @@ function useSaved() {
   const [saved, setSaved] = useState(false);
   const trigger = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
   return { saved, trigger };
+}
+
+// ─── Collapsible Card ─────────────────────────────────────────────────────────
+
+function CollapsibleCard({
+  title,
+  color,
+  defaultOpen = false,
+  onRemove,
+  children,
+}: {
+  title: string;
+  color?: string;
+  defaultOpen?: boolean;
+  onRemove?: () => void;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div
+      style={{
+        ...S.card,
+        borderColor: color ? `${color}25` : "rgba(255,255,255,0.06)",
+        padding: 0,
+        overflow: "hidden",
+      }}
+    >
+      {/* Header */}
+      <div
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          padding: "14px 16px",
+          cursor: "pointer",
+          userSelect: "none",
+          background: open ? "rgba(255,255,255,0.02)" : "transparent",
+          transition: "background 0.15s",
+        }}
+      >
+        {color && (
+          <div
+            style={{
+              width: "10px",
+              height: "10px",
+              borderRadius: "3px",
+              background: color,
+              flexShrink: 0,
+            }}
+          />
+        )}
+        <ChevronDown
+          size={16}
+          style={{
+            color: "#9CA3AF",
+            transition: "transform 0.2s",
+            transform: open ? "rotate(0deg)" : "rotate(-90deg)",
+            flexShrink: 0,
+          }}
+        />
+        <span
+          style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: "14px",
+            fontWeight: 600,
+            color: "#F9FAFB",
+            flex: 1,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {title || "Sem título"}
+        </span>
+        {onRemove && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+            style={{
+              background: "rgba(239,68,68,0.1)",
+              border: "1px solid rgba(239,68,68,0.2)",
+              borderRadius: "6px",
+              color: "#EF4444",
+              cursor: "pointer",
+              padding: "4px 8px",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              fontSize: "12px",
+              flexShrink: 0,
+            }}
+          >
+            <Trash2 size={12} /> Remover
+          </button>
+        )}
+      </div>
+      {/* Body */}
+      {open && (
+        <div style={{ padding: "0 24px 24px" }}>{children}</div>
+      )}
+    </div>
+  );
 }
 
 // ─── Login ────────────────────────────────────────────────────────────────────
@@ -359,10 +465,7 @@ function MetricsEditor() {
     <div>
       <h2 style={S.sectionTitle}>📊 Métricas de Impacto</h2>
       {metrics.map((metric) => (
-        <div key={metric.id} style={{ ...S.card, position: "relative" }}>
-          <button onClick={() => removeMetric(metric.id)} style={{ position: "absolute", top: "16px", right: "16px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "6px", color: "#EF4444", cursor: "pointer", padding: "4px 8px", display: "flex", alignItems: "center", gap: "4px", fontSize: "12px" }}>
-            <Trash2 size={12} /> Remover
-          </button>
+        <CollapsibleCard key={metric.id} title={metric.label} color={metric.color} onRemove={() => removeMetric(metric.id)}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px" }}>
             <Field label="Prefixo (ex: +)"><input style={S.input} value={metric.prefix} onChange={(e) => update(metric.id, "prefix", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
             <Field label="Valor (número)"><input style={S.input} value={metric.value} onChange={(e) => update(metric.id, "value", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
@@ -387,7 +490,7 @@ function MetricsEditor() {
               </div>
             </Field>
           </div>
-        </div>
+        </CollapsibleCard>
       ))}
       <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
         <button onClick={addMetric} style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "10px 18px", borderRadius: "8px", background: "rgba(0,194,255,0.1)", border: "1px solid rgba(0,194,255,0.25)", color: "#00C2FF", fontFamily: "'Inter', sans-serif", fontSize: "14px", cursor: "pointer" }}>
@@ -461,21 +564,16 @@ function TechEditor() {
     <div>
       <h2 style={S.sectionTitle}>🛠 Stack Tecnológica</h2>
       {cats.map((cat) => (
-        <div key={cat.id} style={{ ...S.card, borderColor: `${cat.color}25` }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
-            <div style={{ display: "flex", gap: "12px", flex: 1 }}>
-              <div style={{ width: "80px" }}>
-                <label style={S.label}>Ícone</label>
-                <IconPicker value={cat.icon} onChange={(val) => updateCat(cat.id, "icon", val)} color={cat.color} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={S.label}>Título da Categoria</label>
-                <input style={S.input} value={cat.title} onChange={(e) => updateCat(cat.id, "title", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} />
-              </div>
+        <CollapsibleCard key={cat.id} title={cat.title} color={cat.color} onRemove={() => removeCat(cat.id)}>
+          <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+            <div style={{ width: "80px" }}>
+              <label style={S.label}>Ícone</label>
+              <IconPicker value={cat.icon} onChange={(val) => updateCat(cat.id, "icon", val)} color={cat.color} />
             </div>
-            <button onClick={() => removeCat(cat.id)} style={{ marginLeft: "12px", alignSelf: "flex-end", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "6px", color: "#EF4444", cursor: "pointer", padding: "8px 12px" }}>
-              <Trash2 size={14} />
-            </button>
+            <div style={{ flex: 1 }}>
+              <label style={S.label}>Título da Categoria</label>
+              <input style={S.input} value={cat.title} onChange={(e) => updateCat(cat.id, "title", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} />
+            </div>
           </div>
 
           <div style={{ marginBottom: "16px" }}>
@@ -504,7 +602,7 @@ function TechEditor() {
           <button onClick={() => addTech(cat.id)} style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 14px", borderRadius: "6px", background: `${cat.color}10`, border: `1px solid ${cat.color}25`, color: cat.color, fontFamily: "'Inter', sans-serif", fontSize: "13px", cursor: "pointer", marginTop: "4px" }}>
             <Plus size={13} /> Adicionar tecnologia
           </button>
-        </div>
+        </CollapsibleCard>
       ))}
 
       <button onClick={addCat} style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "10px 18px", borderRadius: "8px", background: "rgba(0,194,255,0.1)", border: "1px solid rgba(0,194,255,0.25)", color: "#00C2FF", fontFamily: "'Inter', sans-serif", fontSize: "14px", cursor: "pointer", marginBottom: "20px" }}>
@@ -588,14 +686,7 @@ function ProjectsEditor() {
     <div>
       <h2 style={S.sectionTitle}>🚀 Projetos Estratégicos</h2>
       {projects.map((proj) => (
-        <div key={proj.id} style={{ ...S.card, borderColor: `${proj.color}25` }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
-            <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "16px", fontWeight: 700, color: "#F9FAFB" }}>{proj.title}</span>
-            <button onClick={() => removeProject(proj.id)} style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "6px", color: "#EF4444", cursor: "pointer", padding: "4px 10px", display: "flex", alignItems: "center", gap: "4px", fontSize: "12px" }}>
-              <Trash2 size={12} /> Remover
-            </button>
-          </div>
-
+        <CollapsibleCard key={proj.id} title={proj.title} color={proj.color} onRemove={() => removeProject(proj.id)}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <Field label="Título"><input style={S.input} value={proj.title} onChange={(e) => updateProject(proj.id, "title", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
             <Field label="Subtítulo"><input style={S.input} value={proj.subtitle} onChange={(e) => updateProject(proj.id, "subtitle", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
@@ -679,7 +770,7 @@ function ProjectsEditor() {
               </div>
             </div>
           </Field>
-        </div>
+        </CollapsibleCard>
       ))}
       <div style={{ display: "flex", gap: "12px" }}>
         <button onClick={addProject} style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "10px 18px", borderRadius: "8px", background: "rgba(0,194,255,0.1)", border: "1px solid rgba(0,194,255,0.25)", color: "#00C2FF", fontFamily: "'Inter', sans-serif", fontSize: "14px", cursor: "pointer" }}>
@@ -715,7 +806,7 @@ function PhilosophyEditor() {
 
       <label style={{ ...S.label, marginTop: "8px" }}>Princípios</label>
       {form.principles.map((p, i) => (
-        <div key={i} style={{ ...S.card }}>
+        <CollapsibleCard key={i} title={p.title} onRemove={() => removePrinciple(i)}>
           <div style={{ display: "flex", gap: "12px" }}>
             <div style={{ width: "70px" }}>
               <label style={S.label}>Número</label>
@@ -725,13 +816,12 @@ function PhilosophyEditor() {
               <label style={S.label}>Título</label>
               <input style={S.input} value={p.title} onChange={(e) => updatePrinciple(i, "title", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} />
             </div>
-            <button onClick={() => removePrinciple(i)} style={{ alignSelf: "flex-end", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "6px", color: "#EF4444", cursor: "pointer", padding: "8px 10px" }}><Trash2 size={12} /></button>
           </div>
           <div style={{ marginTop: "12px" }}>
             <label style={S.label}>Descrição</label>
             <input style={S.input} value={p.desc} onChange={(e) => updatePrinciple(i, "desc", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} />
           </div>
-        </div>
+        </CollapsibleCard>
       ))}
       <div style={{ display: "flex", gap: "12px" }}>
         <button onClick={addPrinciple} style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "10px 18px", borderRadius: "8px", background: "rgba(0,194,255,0.1)", border: "1px solid rgba(0,194,255,0.25)", color: "#00C2FF", fontFamily: "'Inter', sans-serif", fontSize: "14px", cursor: "pointer" }}>
