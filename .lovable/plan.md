@@ -1,24 +1,31 @@
 
 
-## Problem
-The `<a download="...">` approach doesn't work reliably across all browsers and devices — especially on mobile and within iframe-based previews. The file either doesn't download or opens incorrectly.
+## Corrigir dropdowns com fundo branco e implementar seletor de ícones Lucide
 
-## Solution
-Create a helper function that uses `fetch()` + `Blob` + programmatic click to force a real download. This is the most reliable cross-platform approach.
+### Problema
+Os `<select>` nativos do HTML no admin têm fundo branco no dropdown (comportamento do browser), impossibilitando a leitura no tema escuro. Existem 2 selects de ícones: um em **MetricsEditor** (linha 478) e outro em **ProjectsEditor** (linha 697).
 
-### Changes
+### Solução
+Substituir os `<select>` nativos por um **componente customizado de seleção de ícones Lucide** com visual dark consistente com o admin. Em vez de um dropdown nativo, será um picker inline com busca e grid de ícones.
 
-**1. Create `src/app/utils/downloadFile.ts`**
-A utility function that:
-- Fetches `/Vilcimar_Portfolio.pdf` as a blob
-- Creates a temporary object URL
-- Programmatically clicks a hidden `<a>` element with the `download` attribute
-- Cleans up the object URL after download
+### Detalhes técnicos
 
-**2. Update `HeroSection.tsx`**
-- Replace the `<a href download>` with a `<button>` that calls the download utility on click
+**Novo componente `LucideIconSelect`** (dentro de `AdminPage.tsx`):
+- Props: `value` (string), `onChange` (callback), `color` (string opcional)
+- Botão trigger: mostra o ícone selecionado + nome, estilo consistente com `S.input`
+- Ao clicar, abre um painel dropdown customizado (posição absolute, z-index alto):
+  - Background escuro (`#1E293B`) com borda sutil
+  - Campo de busca para filtrar ícones por nome
+  - Grid de ícones Lucide (6 colunas) com preview visual do ícone real
+  - Lista expandida: ~50 ícones populares para BI/dados + busca no catálogo completo `icons` do lucide-react
+  - Hover e seleção com destaque na cor do item
+- Ao selecionar, fecha o painel e chama `onChange`
 
-**3. Update `ContactSection.tsx`**
-- Same change as HeroSection — use the download utility instead of native `<a download>`
+**Alterações em `AdminPage.tsx`:**
+1. Criar `LucideIconSelect` usando `icons` de `lucide-react` (já importado no `IconPicker.tsx`)
+2. **MetricsEditor** (linha 478): substituir `<select>` por `<LucideIconSelect value={metric.icon} onChange={(v) => update(metric.id, "icon", v)} color={metric.color} />`
+3. **ProjectsEditor** (linha 697): substituir `<select>` por `<LucideIconSelect value={proj.icon} onChange={(v) => updateProject(proj.id, "icon", v)} color={proj.color} />`
+4. Remover as constantes `ICONS` locais (linhas 453 e 631) já que o picker terá seu próprio catálogo
 
-This approach works on desktop, mobile (iOS Safari, Android Chrome), and inside iframe previews.
+O componente seguirá o mesmo padrão visual do `IconPicker` existente (fundo escuro, busca, grid), mas focado apenas em ícones Lucide com preview visual real de cada ícone.
+
