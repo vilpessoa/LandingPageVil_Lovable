@@ -1,104 +1,122 @@
 import html2canvas from "html2canvas-pro";
 import { jsPDF } from "jspdf";
+import { createRoot } from "react-dom/client";
+import { createElement } from "react";
 
-const PX_PER_MM = 794 / 210; // 794px = 210mm (A4 width)
-const PAGE_HEIGHT_MM = 297;
 const PAGE_WIDTH_MM = 210;
+const PAGE_HEIGHT_MM = 297;
+const RENDER_WIDTH_PX = 794; // A4 width at ~96dpi
 
 export async function generatePDF(fileName?: string): Promise<void> {
-  const iframe = document.createElement("iframe");
-  iframe.style.position = "fixed";
-  iframe.style.left = "-9999px";
-  iframe.style.top = "0";
-  iframe.style.width = "794px";
-  iframe.style.height = "5000px"; // tall enough for all content
-  iframe.style.border = "none";
-  iframe.style.opacity = "0";
-  iframe.style.pointerEvents = "none";
-  document.body.appendChild(iframe);
+  // Dynamically import PrintPage and DataProvider to avoid circular deps
+  const { PrintPage } = await import("../pages/PrintPage");
+  const { DataProvider } = await import("../context/DataContext");
+
+  // Create hidden container in the main DOM (not an iframe)
+  const container = document.createElement("div");
+  container.style.position = "fixed";
+  container.style.left = "-9999px";
+  container.style.top = "0";
+  container.style.width = `${RENDER_WIDTH_PX}px`;
+  container.style.zIndex = "-9999";
+  container.style.opacity = "0";
+  container.style.pointerEvents = "none";
+  container.style.overflow = "hidden";
+  document.body.appendChild(container);
+
+  let root: ReturnType<typeof createRoot> | null = null;
 
   try {
-    await new Promise<void>((resolve, reject) => {
-      iframe.onload = () => resolve();
-      iframe.onerror = () => reject(new Error("Failed to load print page"));
-      iframe.src = "/print";
+    // Render PrintPage directly in the current document
+    root = createRoot(container);
+    root.render(
+      createElement(DataProvider, null,
+        createElement(PrintPage, { embedded: true })
+      )
+    );
+
+    // Wait for fonts
+    await document.fonts.ready;
+
+    // Wait for React to render + images to load
+    await new Promise<void>((resolve) => {
+      let attempts = 0;
+      const check = () => {
+        const printPage = container.querySelector(".print-page");
+        attempts++;
+        if (printPage && printPage.children.length > 0 && attempts >= 3) {
+          resolve();
+        } else if (attempts > 30) {
+          resolve(); // timeout after ~3s
+        } else {
+          requestAnimationFrame(check);
+        }
+      };
+      requestAnimationFrame(check);
     });
 
-    // Wait for fonts and rendering
-    await new Promise((r) => setTimeout(r, 2500));
+    // Extra settle time for recharts SVGs and images
+    await new Promise((r) => setTimeout(r, 1500));
 
-    const printPage = iframe.contentDocument?.querySelector(".print-page") as HTMLElement;
+    const printPage = container.querySelector(".print-page") as HTMLElement;
     if (!printPage) throw new Error("Print page not found");
 
-    const sections = Array.from(printPage.querySelectorAll(".section-block")) as HTMLElement[];
-    if (sections.length === 0) throw new Error("No sections found");
+    // Capture the entire print page as one large canvas
+    const fullCanvas = await html2canvas(printPage, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#0F172A",
+      width: RENDER_WIDTH_PX,
+      windowWidth: RENDER_WIDTH_PX,
+      logging: false,
+      allowTaint: true,
+    });
+
+    // Calculate page slicing
+    const pxPerMm = fullCanvas.width / PAGE_WIDTH_MM;
+    const pageHeightPx = PAGE_HEIGHT_MM * pxPerMm;
+    const totalPages = Math.ceil(fullCanvas.height / pageHeightPx);
 
     const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
-    // Capture each section individually
-    const sectionCanvases: { canvas: HTMLCanvasElement; hasPageBreak: boolean }[] = [];
+    for (let page = 0; page < totalPages; page++) {
+      if (page > 0) pdf.addPage();
 
-    for (const section of sections) {
-      const canvas = await html2canvas(section, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#0F172A",
-        width: 794,
-        windowWidth: 794,
-        logging: false,
-      });
-      const hasPageBreak = section.classList.contains("page-break");
-      sectionCanvases.push({ canvas, hasPageBreak });
-    }
+      // Calculate slice coordinates
+      const srcY = page * pageHeightPx;
+      const srcHeight = Math.min(pageHeightPx, fullCanvas.height - srcY);
+      const destHeightMM = (srcHeight / pxPerMm);
 
-    // Group sections into pages
-    let currentYMM = 0;
-    let isFirstPage = true;
+      // Create a canvas for this page slice
+      const pageCanvas = document.createElement("canvas");
+      pageCanvas.width = fullCanvas.width;
+      pageCanvas.height = Math.round(pageHeightPx); // always full page height
+      const ctx = pageCanvas.getContext("2d")!;
 
-    for (let i = 0; i < sectionCanvases.length; i++) {
-      const { canvas, hasPageBreak } = sectionCanvases[i];
-      const sectionHeightMM = (canvas.height / canvas.width) * PAGE_WIDTH_MM;
+      // Fill with background color first
+      ctx.fillStyle = "#0F172A";
+      ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
 
-      // Check if this section fits on the current page
-      if (!isFirstPage && currentYMM + sectionHeightMM > PAGE_HEIGHT_MM + 1) {
-        // Doesn't fit — start new page
-        pdf.addPage();
-        currentYMM = 0;
-      }
+      // Draw the slice of the full canvas
+      ctx.drawImage(
+        fullCanvas,
+        0, Math.round(srcY),                          // source x, y
+        fullCanvas.width, Math.round(srcHeight),      // source w, h
+        0, 0,                                          // dest x, y
+        fullCanvas.width, Math.round(srcHeight)        // dest w, h
+      );
 
-      if (!isFirstPage && currentYMM === 0) {
-        // We just added a page, no need to add another
-      } else if (isFirstPage) {
-        isFirstPage = false;
-      }
-
-      // Draw section on current page
-      const imgData = canvas.toDataURL("image/jpeg", 0.95);
-      pdf.addImage(imgData, "JPEG", 0, currentYMM, PAGE_WIDTH_MM, sectionHeightMM);
-
-      currentYMM += sectionHeightMM;
-
-      // If section has page-break, force new page for next section
-      if (hasPageBreak && i < sectionCanvases.length - 1) {
-        // Fill remaining space with background color
-        if (currentYMM < PAGE_HEIGHT_MM) {
-          pdf.setFillColor(15, 23, 42); // #0F172A
-          pdf.rect(0, currentYMM, PAGE_WIDTH_MM, PAGE_HEIGHT_MM - currentYMM, "F");
-        }
-        pdf.addPage();
-        currentYMM = 0;
-      }
-    }
-
-    // Fill remaining space on last page
-    if (currentYMM < PAGE_HEIGHT_MM && currentYMM > 0) {
-      pdf.setFillColor(15, 23, 42);
-      pdf.rect(0, currentYMM, PAGE_WIDTH_MM, PAGE_HEIGHT_MM - currentYMM, "F");
+      const imgData = pageCanvas.toDataURL("image/jpeg", 0.92);
+      pdf.addImage(imgData, "JPEG", 0, 0, PAGE_WIDTH_MM, PAGE_HEIGHT_MM);
     }
 
     const safeName = (fileName || "Portfolio").replace(/\.pdf$/i, "");
     pdf.save(`${safeName}.pdf`);
   } finally {
-    document.body.removeChild(iframe);
+    // Cleanup
+    if (root) {
+      root.unmount();
+    }
+    document.body.removeChild(container);
   }
 }

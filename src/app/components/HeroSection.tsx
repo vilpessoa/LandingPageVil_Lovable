@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Download, Linkedin, ChevronDown, Loader2 } from "lucide-react";
 import { useSiteData } from "../context/DataContext";
 import { generatePDF } from "../utils/generatePDF";
+import { toast } from "sonner";
 
 function AnimatedGridLines() {
   return (
@@ -148,10 +149,13 @@ export function HeroSection() {
   const handleDownload = async () => {
     if (generating) return;
     setGenerating(true);
+    toast.info("Gerando PDF...", { duration: 8000, id: "pdf-gen" });
     try {
       await generatePDF(personal.cvUrl);
+      toast.success("PDF gerado com sucesso!", { id: "pdf-gen" });
     } catch (err) {
       console.error("PDF generation failed:", err);
+      toast.error("Falha ao gerar PDF. Tente novamente.", { id: "pdf-gen" });
     } finally {
       setGenerating(false);
     }
