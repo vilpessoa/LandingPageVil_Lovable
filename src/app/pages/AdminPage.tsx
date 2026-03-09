@@ -274,7 +274,7 @@ function LucideIconSelect({ value, onChange, color = "#00C2FF" }: { value: strin
             placeholder="Buscar ícone..."
             autoFocus
           />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "4px", maxHeight: "200px", overflowY: "auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "4px", maxHeight: "200px", overflowY: "auto", overflowX: "hidden" }}>
             {filtered.map((name) => {
               const Icon = icons[name as keyof typeof icons];
               if (!Icon) return null;
@@ -286,7 +286,7 @@ function LucideIconSelect({ value, onChange, color = "#00C2FF" }: { value: strin
                   title={name}
                   onClick={() => { onChange(name); setOpen(false); setSearch(""); }}
                   style={{
-                    width: "42px", height: "42px", display: "flex", alignItems: "center", justifyContent: "center",
+                    width: "100%", aspectRatio: "1", display: "flex", alignItems: "center", justifyContent: "center",
                     borderRadius: "6px", border: selected ? `2px solid ${color}` : "1px solid transparent",
                     background: selected ? `${color}15` : "rgba(255,255,255,0.03)",
                     cursor: "pointer", color: selected ? color : "#D1D5DB",
