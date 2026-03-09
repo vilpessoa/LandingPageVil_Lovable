@@ -5,6 +5,7 @@ import {
   Quote, Shield, ChevronRight, ChevronDown, Plus, Trash2, Save,
   RotateCcw, Lock, AlertTriangle, CheckCircle2,
 } from "lucide-react";
+import { icons } from "lucide-react";
 import { useSiteData, MetricItem, TechCategory, Project, Principle } from "../context/DataContext";
 import { IconPicker } from "../components/IconPicker";
 import { supabase } from "@/integrations/supabase/client";
