@@ -555,7 +555,6 @@ function MetricsEditor() {
   const [metrics, setMetrics] = useState<MetricItem[]>(data.metrics.map((m) => ({ ...m })));
   const { saved, trigger } = useSaved();
 
-  const ICONS = ["BarChart3", "Clock", "Zap", "Database", "TrendingUp", "Users", "Star", "Award"];
   const COLORS = ["#00C2FF", "#7C3AED", "#10B981", "#F59E0B", "#EF4444", "#EC4899"];
 
   const update = (id: string, key: keyof MetricItem, val: any) =>
