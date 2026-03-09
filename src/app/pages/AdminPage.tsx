@@ -465,10 +465,7 @@ function MetricsEditor() {
     <div>
       <h2 style={S.sectionTitle}>📊 Métricas de Impacto</h2>
       {metrics.map((metric) => (
-        <div key={metric.id} style={{ ...S.card, position: "relative" }}>
-          <button onClick={() => removeMetric(metric.id)} style={{ position: "absolute", top: "16px", right: "16px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "6px", color: "#EF4444", cursor: "pointer", padding: "4px 8px", display: "flex", alignItems: "center", gap: "4px", fontSize: "12px" }}>
-            <Trash2 size={12} /> Remover
-          </button>
+        <CollapsibleCard key={metric.id} title={metric.label} color={metric.color} onRemove={() => removeMetric(metric.id)}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px" }}>
             <Field label="Prefixo (ex: +)"><input style={S.input} value={metric.prefix} onChange={(e) => update(metric.id, "prefix", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
             <Field label="Valor (número)"><input style={S.input} value={metric.value} onChange={(e) => update(metric.id, "value", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
@@ -493,7 +490,7 @@ function MetricsEditor() {
               </div>
             </Field>
           </div>
-        </div>
+        </CollapsibleCard>
       ))}
       <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
         <button onClick={addMetric} style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "10px 18px", borderRadius: "8px", background: "rgba(0,194,255,0.1)", border: "1px solid rgba(0,194,255,0.25)", color: "#00C2FF", fontFamily: "'Inter', sans-serif", fontSize: "14px", cursor: "pointer" }}>
