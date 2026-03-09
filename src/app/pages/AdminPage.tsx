@@ -686,14 +686,7 @@ function ProjectsEditor() {
     <div>
       <h2 style={S.sectionTitle}>🚀 Projetos Estratégicos</h2>
       {projects.map((proj) => (
-        <div key={proj.id} style={{ ...S.card, borderColor: `${proj.color}25` }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
-            <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "16px", fontWeight: 700, color: "#F9FAFB" }}>{proj.title}</span>
-            <button onClick={() => removeProject(proj.id)} style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "6px", color: "#EF4444", cursor: "pointer", padding: "4px 10px", display: "flex", alignItems: "center", gap: "4px", fontSize: "12px" }}>
-              <Trash2 size={12} /> Remover
-            </button>
-          </div>
-
+        <CollapsibleCard key={proj.id} title={proj.title} color={proj.color} onRemove={() => removeProject(proj.id)}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <Field label="Título"><input style={S.input} value={proj.title} onChange={(e) => updateProject(proj.id, "title", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
             <Field label="Subtítulo"><input style={S.input} value={proj.subtitle} onChange={(e) => updateProject(proj.id, "subtitle", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
@@ -777,7 +770,7 @@ function ProjectsEditor() {
               </div>
             </div>
           </Field>
-        </div>
+        </CollapsibleCard>
       ))}
       <div style={{ display: "flex", gap: "12px" }}>
         <button onClick={addProject} style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "10px 18px", borderRadius: "8px", background: "rgba(0,194,255,0.1)", border: "1px solid rgba(0,194,255,0.25)", color: "#00C2FF", fontFamily: "'Inter', sans-serif", fontSize: "14px", cursor: "pointer" }}>
