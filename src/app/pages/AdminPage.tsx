@@ -123,7 +123,7 @@ function CollapsibleCard({
         ...S.card,
         borderColor: color ? `${color}25` : "rgba(255,255,255,0.06)",
         padding: 0,
-        overflow: "hidden",
+        overflow: "visible",
       }}
     >
       {/* Header */}
