@@ -795,9 +795,7 @@ function ProjectsEditor() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <Field label="Tag (ex: Python + BI)"><input style={S.input} value={proj.tag} onChange={(e) => updateProject(proj.id, "tag", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} /></Field>
             <Field label="Ícone">
-              <select style={S.input} value={proj.icon} onChange={(e) => updateProject(proj.id, "icon", e.target.value)}>
-                {ICONS.map((ic) => <option key={ic} value={ic}>{ic}</option>)}
-              </select>
+              <LucideIconSelect value={proj.icon} onChange={(v) => updateProject(proj.id, "icon", v)} color={proj.color} />
             </Field>
           </div>
 
