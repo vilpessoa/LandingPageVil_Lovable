@@ -564,21 +564,16 @@ function TechEditor() {
     <div>
       <h2 style={S.sectionTitle}>🛠 Stack Tecnológica</h2>
       {cats.map((cat) => (
-        <div key={cat.id} style={{ ...S.card, borderColor: `${cat.color}25` }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
-            <div style={{ display: "flex", gap: "12px", flex: 1 }}>
-              <div style={{ width: "80px" }}>
-                <label style={S.label}>Ícone</label>
-                <IconPicker value={cat.icon} onChange={(val) => updateCat(cat.id, "icon", val)} color={cat.color} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={S.label}>Título da Categoria</label>
-                <input style={S.input} value={cat.title} onChange={(e) => updateCat(cat.id, "title", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} />
-              </div>
+        <CollapsibleCard key={cat.id} title={cat.title} color={cat.color} onRemove={() => removeCat(cat.id)}>
+          <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+            <div style={{ width: "80px" }}>
+              <label style={S.label}>Ícone</label>
+              <IconPicker value={cat.icon} onChange={(val) => updateCat(cat.id, "icon", val)} color={cat.color} />
             </div>
-            <button onClick={() => removeCat(cat.id)} style={{ marginLeft: "12px", alignSelf: "flex-end", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "6px", color: "#EF4444", cursor: "pointer", padding: "8px 12px" }}>
-              <Trash2 size={14} />
-            </button>
+            <div style={{ flex: 1 }}>
+              <label style={S.label}>Título da Categoria</label>
+              <input style={S.input} value={cat.title} onChange={(e) => updateCat(cat.id, "title", e.target.value)} onFocus={(e) => (e.target.style.borderColor = "#00C2FF")} onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")} />
+            </div>
           </div>
 
           <div style={{ marginBottom: "16px" }}>
@@ -607,7 +602,7 @@ function TechEditor() {
           <button onClick={() => addTech(cat.id)} style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "7px 14px", borderRadius: "6px", background: `${cat.color}10`, border: `1px solid ${cat.color}25`, color: cat.color, fontFamily: "'Inter', sans-serif", fontSize: "13px", cursor: "pointer", marginTop: "4px" }}>
             <Plus size={13} /> Adicionar tecnologia
           </button>
-        </div>
+        </CollapsibleCard>
       ))}
 
       <button onClick={addCat} style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "10px 18px", borderRadius: "8px", background: "rgba(0,194,255,0.1)", border: "1px solid rgba(0,194,255,0.25)", color: "#00C2FF", fontFamily: "'Inter', sans-serif", fontSize: "14px", cursor: "pointer", marginBottom: "20px" }}>
