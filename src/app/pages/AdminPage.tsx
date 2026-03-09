@@ -730,7 +730,6 @@ function ProjectsEditor() {
   const { data, updateProjects } = useSiteData();
   const [projects, setProjects] = useState<Project[]>(data.projects.map((p) => ({ ...p, metrics: p.metrics.map((m) => ({ ...m })) })));
   const { saved, trigger } = useSaved();
-  const ICONS = ["TrendingUp", "Cpu", "Target", "BarChart3", "Zap", "Database", "Star", "Award"];
   const COLORS = ["#00C2FF", "#7C3AED", "#10B981", "#F59E0B", "#EF4444", "#EC4899"];
   const fileRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [uploading, setUploading] = useState<string | null>(null);
